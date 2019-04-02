@@ -3,13 +3,21 @@ import './App.css';
 import roster from './roster.js'
 import NamePlate from './components/namePlate.js'
 import { connect } from 'react-redux'
-import { removePlayer } from './actions/index.js';
+import { removePlayer, addPlayer } from './actions/index.js';
 
 class App extends Component {
+  addPlayer = (e) =>{
+    let playerName = e.target.id;
+    for(let i = 1; i< 6; i++){
+      if(this.props[`player${i}`] === ''){
+        this.props.addPlayer(playerName, i);
+        break;
+      }
+    }
+  }
   removePlayer = (e) =>{
     const playerID = e.target.id;
     this.props.removePlayer(playerID);
-
   }
   render() {
     return (
@@ -51,6 +59,7 @@ class App extends Component {
 }
 const mapDispatchToProps = dispatch =>({
   removePlayer: (ID) => dispatch(removePlayer(ID)),
+  addPlayer: (name,ID) => dispatch(addPlayer(name,ID)),
 
 });
 const mapStateToProps = store => ({
