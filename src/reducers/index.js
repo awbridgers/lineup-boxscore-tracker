@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
 import { player1, player2, player3, player4, player5 } from './currentLineup.js';
+import { time } from './time.js';
+import { lineupArray } from './lineupArray.js'
+import { reducer as formReducer} from 'redux-form';
 
 
 const rootReducer = combineReducers({
@@ -7,7 +10,9 @@ const rootReducer = combineReducers({
   player2,
   player3,
   player4,
-  player5
+  player5,
+  time,
+  lineupArray,
 });
 
 
