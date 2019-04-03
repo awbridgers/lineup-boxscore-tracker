@@ -9,8 +9,8 @@ import Lineup from './lineupClass.js';
 class App extends Component {
   addPlayer = (e) =>{
     let playerName = e.target.id;
-    for(let i = 1; i< 6; i++){
-      if(this.props[`player${i}`] === ''){
+    for(let i = 0; i< 5; i++){
+      if(this.props.currentLineup[i] === ''){
         this.props.addPlayer(playerName, i);
         break;
       }
@@ -26,7 +26,7 @@ class App extends Component {
     }
   }
   submitLineup = () =>{
-    
+
   }
   fixTime = time =>{
     let value = null;
@@ -57,19 +57,19 @@ class App extends Component {
               <div className = "lineupInfo">
                 <div className = "inTheGame">
                   <p>Current Lineup</p>
-                  <NamePlate id = '1' name = {this.props.player1} onClick = {this.removePlayer}/>
-                  <NamePlate id = '2' name = {this.props.player2} onClick = {this.removePlayer}/>
-                  <NamePlate id = '3' name = {this.props.player3} onClick = {this.removePlayer}/>
-                  <NamePlate id = '4' name = {this.props.player4} onClick = {this.removePlayer}/>
-                  <NamePlate id = '5' name = {this.props.player5} onClick = {this.removePlayer}/>
+                  <NamePlate id = '0' name = {this.props.currentLineup[0]} onClick = {this.removePlayer}/>
+                  <NamePlate id = '1' name = {this.props.currentLineup[1]} onClick = {this.removePlayer}/>
+                  <NamePlate id = '2' name = {this.props.currentLineup[2]} onClick = {this.removePlayer}/>
+                  <NamePlate id = '3' name = {this.props.currentLineup[3]} onClick = {this.removePlayer}/>
+                  <NamePlate id = '4' name = {this.props.currentLineup[4]} onClick = {this.removePlayer}/>
                   <p><button className = "lineupSubmit" type = "button">Submit Lineup</button></p>
                 </div>
                 <div className = 'playerBank'>
                   <p>Available Players</p>
                   {roster.sort().map((player,i) => {
                     return(
-                      player !== this.props.player1 && player !== this.props.player2 && player !== this.props.player3 &&
-                        player !== this.props.player4 && player !== this.props.player5 &&
+                      player !== this.props.currentLineup[0] && player !== this.props.currentLineup[1] && player !== this.props.currentLineup[2] &&
+                        player !== this.props.currentLineup[3] && player !== this.props.currentLineup[4] &&
                         <button  key = {i} onClick = {this.addPlayer} id = {player} type = 'button'>{player}</button>
                       )
                     })
@@ -90,11 +90,7 @@ const mapDispatchToProps = dispatch =>({
 
 });
 const mapStateToProps = store => ({
-  player1: store.player1,
-  player2: store.player2,
-  player3: store.player3,
-  player4: store.player4,
-  player5: store.player5,
+  currentLineup: store.currentLineup,
   time: store.time,
 });
 

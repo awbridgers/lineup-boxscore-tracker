@@ -1,10 +1,12 @@
 export const removePlayer = ID =>({
-  type: `REMOVE_PLAYER_${ID}`,
+  type: 'REMOVE_PLAYER',
+  ID
 })
 
 export const addPlayer = (name, ID) =>({
-  type: `ADD_PLAYER_${ID}`,
-  name
+  type: 'ADD_PLAYER',
+  name,
+  ID
 })
 
 export const updateTime = time =>({
