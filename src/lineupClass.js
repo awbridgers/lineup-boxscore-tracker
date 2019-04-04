@@ -1,7 +1,14 @@
 class Lineup {
-  constructor(players, time){
+  constructor(players, time, half){
     this.players = players;
-    this.time = [time];
+    if(half ===1){
+      this.firstHalfArray = [time];
+      this.secondHalfArray =[];
+    }
+    else if(half ===2){
+      this.firstHalfArray = [];
+      this.secondHalfArray = [time]
+    }
     this.pointsFor = 0;
     this.pointsAgainst = 0;
     this.dRebFor = 0;

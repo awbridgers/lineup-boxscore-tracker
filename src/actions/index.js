@@ -13,3 +13,25 @@ export const updateTime = time =>({
   type: 'UPDATE_TIME',
   newTime: time
 })
+
+export const addLineup = lineup =>({
+  type: 'ADD_LINEUP',
+  lineup
+})
+
+export const addTimeToLineup = (time, index, half) =>({
+    type: 'ADD_TIME_TO_LINEUP',
+    time,
+    index,
+    half,
+})
+
+export const changeIndex = index =>({
+  type: 'CHANGE_INDEX',
+  index
+})
+
+export const changeHalf = half => ({
+  type: 'CHANGE_HALF',
+  half
+})
