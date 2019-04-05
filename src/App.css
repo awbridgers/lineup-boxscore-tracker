@@ -23,9 +23,16 @@ body{
   width: 50%;
   height: 100vh;
   color: white;
+  text-align: center;
   border-left: 1px solid white;
   box-sizing: border-box;
 
+}
+.right textArea{
+  width: 75%;
+  height: 80%;
+  margin: 25px;
+  white-space: pre-line;
 }
 
 .lineupSubmit{

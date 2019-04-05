@@ -35,3 +35,8 @@ export const changeHalf = half => ({
   type: 'CHANGE_HALF',
   half
 })
+
+export const updatePlayByPlay = text =>({
+  type: 'UPDATE_PLAY_BY_PLAY',
+  text,
+})

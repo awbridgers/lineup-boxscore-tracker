@@ -4,7 +4,7 @@ import roster from './roster.js';
 import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
-import { changeIndex, changeHalf } from './actions/index.js'
+import { changeIndex, changeHalf, updatePlayByPlay } from './actions/index.js'
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
 
@@ -94,6 +94,63 @@ class App extends Component {
     });
     return index;
   }
+  updateText = (e) =>{
+    this.props.updatePlayByPlay(e.target.value)
+  }
+  stringIncludes = string =>{
+    let result = false;
+    roster.forEach((name)=>{
+      if(string.includes(name)){
+        result = true;
+      }
+    })
+    return result;
+  }
+  findTimeGap = (time,half) =>{
+    //find the lineup that was on the court at time
+    let array = (half === 1) ? 'firstHalfArray': 'secondHalfArray';
+    let lineupArray = this.props.lineupArray;
+    //loop through all the lineups that are in the lineup array
+    for(let j = 0; j< lineupArray.length; j++){
+      //then, for each lineup, loop through their time arrays
+      const timeArray = lineupArray[j][array]
+      for(let i =0; i< timeArray.length; i+=2){
+        //if the time argument falls between the time pairs, lineup was on court
+        if(timeArray[i] >= time && time > timeArray[i+1]){
+          return j;
+        }
+      }
+    }
+    return -1;
+  }
+  test = () =>{
+    const text = this.props.playByPlay;
+    let firstHalfPlays = [];
+    let secondHalfPlays = [];
+    const test = text.split('2nd Half\ntime\tteam\tPLAY\tSCORE\n');
+    const firstHalf = test[0].split('\n');
+    firstHalf.forEach((line)=>{
+      let plays = line.split('\t');
+      let playObject = {time: this.fixTime(plays[0].replace(':','')), details: plays[2]}
+      firstHalfPlays.push(playObject);
+    })
+    if(test.length > 1){
+      const secondHalf = test[1].split('\n')
+      secondHalfPlays.forEach((line)=>{
+        let plays = line.split('\t');
+        let playObject = {time: this.fixTime(plays[0].replace(':','')), details: plays[2]}
+        firstHalfPlays.push(playObject);
+      })
+    }
+    firstHalfPlays.forEach((play)=>{
+      const timeGap = this.findTimeGap(play.time,1);
+      console.log(timeGap);
+      if(this.stringIncludes(play.details)){
+        console.log('Wake Play')
+      }
+    })
+
+  }
   render() {
     return (
       <div className="App">
@@ -132,9 +189,13 @@ class App extends Component {
                 <p><button type ='button' onClick = {this.endHalf}>End Half</button></p>
                 <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
                 <p><button type = "button">Finished</button></p>
-                <p><button type = "button">Test</button></p>
+                <p><button type = "button" onClick = {this.test}>Test</button></p>
               </div>
             </div>
+          </div>
+          <div className = 'right'>
+            <textarea type = 'text' name = 'plays' value = {this.props.playByPlay} onChange = {this.updateText}
+              placeholder = 'Enter play by play data here after you have finished tracking lineups'></textarea>
           </div>
         </div>
       </div>
@@ -148,7 +209,8 @@ const mapDispatchToProps = dispatch =>({
   addLineup: (lineup)=> dispatch(addLineup(lineup)),
   addTimeToLineup: (time, index, half)=> dispatch(addTimeToLineup(time,index,half)),
   changeIndex: (index) => dispatch(changeIndex(index)),
-  changeHalf: (half) => dispatch(changeHalf(half))
+  changeHalf: (half) => dispatch(changeHalf(half)),
+  updatePlayByPlay: (text) => dispatch(updatePlayByPlay(text)),
 
 });
 const mapStateToProps = store => ({
@@ -157,6 +219,7 @@ const mapStateToProps = store => ({
   lineupArray: store.lineupArray,
   lineupIndex: store.lineupIndex,
   half: store.half,
+  playByPlay: store.playByPlay,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
