@@ -158,6 +158,7 @@ table.report th {
 .lineupInfo{
   display: flex;
   align-items: top;
+  margin-top: -25px;
 }
 .gameInfo{
   height: 50vh;

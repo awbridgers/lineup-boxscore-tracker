@@ -4,11 +4,11 @@ import roster from './roster.js';
 import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
-import { changeIndex, changeHalf, updatePlayByPlay } from './actions/index.js'
+import { changeIndex, changeHalf, updatePlayByPlay } from './actions/index.js';
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
 
-class App extends Component {
+export class App extends Component {
   addPlayer = (e) =>{
     let playerName = e.target.id;
     for(let i = 0; i< 5; i++){
@@ -108,7 +108,13 @@ class App extends Component {
   }
   findTimeGap = (time,half) =>{
     //find the lineup that was on the court at time
-    let array = (half === 1) ? 'firstHalfArray': 'secondHalfArray';
+    let array;
+    if(half === 1){
+      array = 'firstHalfArray';
+    }
+    else if(half === 2){
+      array = 'secondHalfArray'
+    }
     let lineupArray = this.props.lineupArray;
     //loop through all the lineups that are in the lineup array
     for(let j = 0; j< lineupArray.length; j++){
@@ -123,33 +129,55 @@ class App extends Component {
     }
     return -1;
   }
-  test = () =>{
+  parseData = () =>{
     const text = this.props.playByPlay;
     let firstHalfPlays = [];
     let secondHalfPlays = [];
-    const test = text.split('2nd Half\ntime\tteam\tPLAY\tSCORE\n');
-    const firstHalf = test[0].split('\n');
-    firstHalf.forEach((line)=>{
-      let plays = line.split('\t');
-      let playObject = {time: this.fixTime(plays[0].replace(':','')), details: plays[2]}
-      firstHalfPlays.push(playObject);
-    })
-    if(test.length > 1){
-      const secondHalf = test[1].split('\n')
-      secondHalfPlays.forEach((line)=>{
-        let plays = line.split('\t');
-        let playObject = {time: this.fixTime(plays[0].replace(':','')), details: plays[2]}
-        firstHalfPlays.push(playObject);
+    //split play by play into halves
+    const separateHalves = text.split('\n2nd Half\ntime\tteam\tPLAY\tSCORE\n');
+    //if the first half exists
+    if(separateHalves.length>0){
+      //split by new line character and loop through
+      separateHalves[0].split('\n').forEach((line)=>{
+        //split each line into its 3 components (time, play, score)
+        let play = line.split('\t')
+        if(typeof play[2]!== 'undefined'){
+          firstHalfPlays.push({
+            time: this.fixTime(play[0].replace(':','')),
+            details: play[2]
+          })
+        }
       })
     }
+    //if the second half exists, repeat the process
+    if(separateHalves.length>1){
+      separateHalves[1].split('\n').forEach((line)=>{
+        let play = line.split('\t');
+        if(typeof play[2]!== 'undefined'){
+          secondHalfPlays.push({
+            time: this.fixTime(play[0].replace(':','')),
+            details: play[2]
+          })
+        }
+      })
+    }
+    return {firstHalfPlays, secondHalfPlays}
+  }
+  test = () =>{
+    const {firstHalfPlays, secondHalfPlays} = this.parseData();
+    //for every play in the array, find who was on the court and give that lineup the stats
     firstHalfPlays.forEach((play)=>{
-      const timeGap = this.findTimeGap(play.time,1);
-      console.log(timeGap);
-      if(this.stringIncludes(play.details)){
-        console.log('Wake Play')
+      const index = this.findTimeGap(play.time,1);
+      if(index !== -1){
+        let tempLineup = {...this.props.lineupArray[index]};
       }
     })
-
+    secondHalfPlays.forEach((play)=>{
+      const index = this.findTimeGap(play.time,2);
+      if(index !== -1){
+        let tempLineup = {...this.props.lineupArray[index]};
+      }
+    })
   }
   render() {
     return (
@@ -202,7 +230,7 @@ class App extends Component {
     );
   }
 }
-const mapDispatchToProps = dispatch =>({
+ const mapDispatchToProps = dispatch =>({
   removePlayer: (ID) => dispatch(removePlayer(ID)),
   addPlayer: (name,ID) => dispatch(addPlayer(name,ID)),
   updateTime: (time)=> dispatch(updateTime(time)),
