@@ -98,7 +98,9 @@ export class App extends Component {
     this.props.updatePlayByPlay(e.target.value)
   }
   stringIncludes = string =>{
-    let result = false;
+    //if the play includes Wake Forest, its a Wake team play, so include that
+    //i.e. 'Wake Forest Offensive Rebound'
+    let result = (string.includes('Wake Forest')) ? true : false;
     roster.forEach((name)=>{
       if(string.includes(name)){
         result = true;
@@ -165,17 +167,98 @@ export class App extends Component {
   }
   test = () =>{
     const {firstHalfPlays, secondHalfPlays} = this.parseData();
-    //for every play in the array, find who was on the court and give that lineup the stats
-    firstHalfPlays.forEach((play)=>{
-      const index = this.findTimeGap(play.time,1);
-      if(index !== -1){
-        let tempLineup = {...this.props.lineupArray[index]};
+    //combine the 2 arrays with a separator
+    const playArray = [...firstHalfPlays,'HALF',...secondHalfPlays]
+    let half = 1;
+
+    playArray.forEach((play)=>{
+      //if the play is the separator, switch half to 2 to search 2nd half times
+      if(play === 'HALF'){
+        half = 2;
       }
-    })
-    secondHalfPlays.forEach((play)=>{
-      const index = this.findTimeGap(play.time,2);
-      if(index !== -1){
-        let tempLineup = {...this.props.lineupArray[index]};
+      else{
+        const index = this.findTimeGap(play.time, half);
+        if(index !== -1){
+          const wakePlay = this.stringIncludes(play.details);
+          const details = play.details.toLowerCase();
+          let tempLineup = {...this.props.lineupArray[index]};
+          //if the play involves a wake player
+          if(wakePlay){
+            if(details.includes('made')){
+              if(details.includes('free throw')){
+                //console.log('made Free Throw')
+              }
+              else if(details.includes('three point')){
+                //console.log('made Three Pointer');
+              }
+              else{
+                //console.log('made 2 pointer')
+              }
+              //if the basket was assisted
+              if(details.includes('assist')){
+                //console.log('assist')
+              }
+            }
+            else if(details.includes('missed')){
+              if(details.includes('free throw')){
+                //console.log('missed free throw')
+              }
+              else if(details.includes('three point')){
+                //console.log('missed Three Pointer');
+              }
+              else{
+                //console.log('missed 2 pointer')
+              }
+            }
+            else if(details.includes('defensive rebound')){
+              //console.log('Defensive Rebound')
+            }
+            else if(details.includes('offensive rebound')){
+              //console.log('Offensive Rebound')
+            }
+            else if(details.includes('turnover')){
+              //console.log('turnover');
+            }
+          }
+          else{
+            //not a wake play
+            if(details.includes('made')){
+              if(details.includes('free throw')){
+                //console.log('made Free Throw')
+              }
+              else if(details.includes('three point')){
+                //console.log('made Three Pointer');
+              }
+              else{
+                //console.log('made 2 pointer')
+              }
+              //if the basket was assisted
+              if(details.includes('assist')){
+                //console.log('assist')
+              }
+            }
+            else if(details.includes('missed')){
+              if(details.includes('free throw')){
+                //console.log('missed free throw')
+              }
+              else if(details.includes('three point')){
+                //console.log('missed Three Pointer');
+              }
+              else{
+                //console.log('missed 2 pointer')
+              }
+            }
+            else if(details.includes('defensive rebound')){
+              //console.log('Defensive Rebound')
+            }
+            else if(details.includes('offensive rebound')){
+              //console.log('Offensive Rebound')
+            }
+            else if(details.includes('turnover')){
+              //console.log('turnover');
+            }
+          }
+        }
       }
     })
   }

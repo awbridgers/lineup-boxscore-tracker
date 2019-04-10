@@ -15,9 +15,9 @@ class Lineup {
     this.dRebAgainst = 0;
     this.oRebFor = 0;
     this.oRebAgainst = 0;
-    this.madeShots = 0;
+    this.madeShotsFor = 0;
     this.madeShotsAgainst = 0;
-    this.turnovers = 0;
+    this.turnoversFor = 0;
     this.turnoversAgainst = 0;
   }
   get possFor(){
