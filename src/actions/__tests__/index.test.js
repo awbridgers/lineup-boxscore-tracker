@@ -1,5 +1,6 @@
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from '../index.js';
-import { changeIndex, changeHalf, updatePlayByPlay } from '../index.js';
+import { changeIndex, changeHalf, updatePlayByPlay, updateLineup } from '../index.js';
+import Lineup from '../../lineupClass.js'
 
 describe('actions',()=>{
   it('passes the right action for removing a player',()=>{
@@ -33,6 +34,16 @@ describe('actions',()=>{
       {
         type: 'UPDATE_PLAY_BY_PLAY',
         text: 'test'
+      }
+    )
+  })
+  it('passes the right action for updating the lineup',()=>{
+    expect(updateLineup(0,'pointsFor', 2)).toEqual(
+      {
+        type: 'UPDATE_LINEUP',
+        category: 'pointsFor',
+        index:0,
+        increment: 2
       }
     )
   })
