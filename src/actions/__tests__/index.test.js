@@ -1,5 +1,5 @@
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from '../index.js';
-import { changeIndex, changeHalf, updatePlayByPlay, updateLineup } from '../index.js';
+import { changeIndex, changeHalf, updatePlayByPlay, updatePoints } from '../index.js';
 import Lineup from '../../lineupClass.js'
 
 describe('actions',()=>{
@@ -38,12 +38,12 @@ describe('actions',()=>{
     )
   })
   it('passes the right action for updating the lineup',()=>{
-    expect(updateLineup(0,'pointsFor', 2)).toEqual(
+    expect(updatePoints('ADD_FREE_THROW',0,true,false)).toEqual(
       {
-        type: 'UPDATE_LINEUP',
-        category: 'pointsFor',
+        type: 'ADD_FREE_THROW',
         index:0,
-        increment: 2
+        wakePlay: true,
+        assisted: false
       }
     )
   })
