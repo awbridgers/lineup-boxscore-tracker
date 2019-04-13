@@ -40,3 +40,29 @@ export const updatePlayByPlay = text =>({
   type: 'UPDATE_PLAY_BY_PLAY',
   text,
 })
+
+
+export const updatePoints =(type, index, wakePlay, assisted) =>({
+  type,
+  index,
+  wakePlay,
+  assisted
+})
+
+export const updateMissedShots = (type, index, wakePlay) =>({
+  type,
+  index,
+  wakePlay
+})
+
+export const updateRebound = (type, index, wakePlay) =>({
+  type,
+  index,
+  wakePlay
+})
+
+export const updateTurnovers = (index, wakePlay) =>({
+  type: 'ADD_TURNOVER',
+  index,
+  wakePlay
+})
