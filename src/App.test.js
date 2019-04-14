@@ -5,9 +5,19 @@ import roster from './roster.js'
 import Container from './App.js'
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux'
+import Lineup from './lineupClass.js'
 
+const testFile = '\n0:00\t\tEnd of 1st half\t49 - 21\t\n2nd Half\ntime\tteam\tPLAY\tSCORE\n20:00\t\tJump Ball won by Wake Forest\t49 - 21\t'
 const mockStore = configureMockStore();
+let lineup = new Lineup([
+  'Brandon Childress',
+  'Sharone Wright',
+  'Chaundee Brown',
+  'Jaylen Hoard',
+  'Olivier Sarr'],1200,1);
 
+  lineup.firstHalfArray = [1200,0];
+  lineup.secondHalfArray = [1200,0]
 
 const props = {
   removePlayer: jest.fn(),
@@ -18,10 +28,15 @@ const props = {
   changeIndex: jest.fn(),
   changeHalf: jest.fn(),
   updatePlayByPlay: jest.fn(),
-  currentLineup: ['1','2','3','4','5'],
+  currentLineup: [
+    'Brandon Childress',
+    'Sharone Wright',
+    'Chaundee Brown',
+    'Jaylen Hoard',
+    'Olivier Sarr'],
   time: '2000',
-  lineupArray: [],
-  lineupIndex: 69,
+  lineupArray: [lineup],
+  lineupIndex: 0,
   half: 1,
   playByPlay: '',
 }
@@ -37,9 +52,6 @@ describe('App Component',()=>{
   it('renders without crashing', () => {
     expect(wrapper.find('div.App')).toBeDefined();
   })
-  it('renders all the divs',()=>{
-    expect(wrapper).toMatchSnapshot();
-  })
   it('renders all 5 names',()=>{
     expect(wrapper.find('NamePlate').length).toEqual(5);
   })
@@ -49,7 +61,7 @@ describe('App Component',()=>{
   })
   it('displays all the players not in the game in the player bank',()=>{
     expect(wrapper.find('div.playerBank').find('button').length)
-    .toEqual(roster.length);
+    .toEqual(roster.length-5);
   })
   it('renders all the results buttons',()=>{
     expect(wrapper.find('div.resultsButtonContainer').find('button').length)
@@ -113,6 +125,7 @@ describe('App Component',()=>{
     expect(wrapper.instance().stringIncludes('John Cena')).toEqual(false);
   })
   it('returns -1 for no match in findTimeGap',()=>{
+    wrapper.setProps({lineupArray:[]});
     expect(wrapper.instance().findTimeGap(1200,1)).toEqual(-1);
   })
   it('returns the lineup index that was on the court for findTimeGap',()=>{
@@ -131,5 +144,21 @@ describe('App Component',()=>{
     wrapper.find('div.resultsButton').find('button').last().simulate('click');
     expect(wrapper.instance().test).toHaveBeenCalled();
   })
-
+  it('runs the parseData function',()=>{
+    wrapper.setProps({playByPlay: testFile});
+    expect(wrapper.instance().parseData()).toEqual(
+      {
+        firstHalfPlays:[
+        {
+          time: 0,
+          details: 'End of 1st half'
+        }],
+      secondHalfPlays:[
+        {
+          time: 1200,
+          details: 'Jump Ball won by Wake Forest'
+        }]
+      }
+    )
+  })
 })
