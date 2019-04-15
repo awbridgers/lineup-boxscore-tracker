@@ -54,7 +54,7 @@ describe('actions',()=>{
     })
   })
   it('passes the right action for updating rebounds',()=>{
-    expect(actions.updateRebound('ADD_OFFENSIVE_REBOUND',0,true)).toEqual(
+    expect(actions.updateRebounds('ADD_OFFENSIVE_REBOUND',0,true)).toEqual(
       {
         type: 'ADD_OFFENSIVE_REBOUND',
         index: 0,

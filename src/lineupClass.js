@@ -15,10 +15,18 @@ class Lineup {
     this.dRebAgainst = 0;
     this.oRebFor = 0;
     this.oRebAgainst = 0;
-    this.madeShotsFor = 0;
-    this.madeShotsAgainst = 0;
+    this.madeTwosFor = 0;
+    this.missedTwosFor = 0;
+    this.madeTwosAgainst = 0;
+    this.missedTwosAgainst = 0;
+    this.madeThreesFor = 0
+    this.madeThreesAgainst = 0;
+    this.missedThreesFor = 0;
+    this.missedThreesAgainst = 0;
     this.turnoversFor = 0;
     this.turnoversAgainst = 0;
+    this.assistsFor = 0;
+    this.assistsAgainst = 0;
   }
   get possFor(){
     return this.madeShotsAgainst + this.oRebFor + this.dRebFor + this.turnoversAgainst;

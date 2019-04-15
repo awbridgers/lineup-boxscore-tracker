@@ -55,7 +55,7 @@ export const updateMissedShots = (type, index, wakePlay) =>({
   wakePlay
 })
 
-export const updateRebound = (type, index, wakePlay) =>({
+export const updateRebounds = (type, index, wakePlay) =>({
   type,
   index,
   wakePlay

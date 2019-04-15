@@ -65,7 +65,7 @@ describe('App Component',()=>{
   })
   it('renders all the results buttons',()=>{
     expect(wrapper.find('div.resultsButtonContainer').find('button').length)
-    .toEqual(4)
+    .toEqual(5)
   })
   it('renders the play by play box',()=>{
     expect(wrapper.find('div.right').find('textarea').length).toEqual(1);
@@ -141,7 +141,7 @@ describe('App Component',()=>{
     secondHalfArray:[], playByPlay: '20:00\t \tJump Ball won by North Carolina'}]})
     wrapper.instance().test = jest.fn();
     wrapper.instance().forceUpdate();
-    wrapper.find('div.resultsButton').find('button').last().simulate('click');
+    wrapper.find('div.resultsButton').find('button').at(3).simulate('click');
     expect(wrapper.instance().test).toHaveBeenCalled();
   })
   it('runs the parseData function',()=>{

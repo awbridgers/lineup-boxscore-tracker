@@ -4,7 +4,8 @@ import roster from './roster.js';
 import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
-import { changeIndex, changeHalf, updatePlayByPlay } from './actions/index.js';
+import { changeIndex, changeHalf, updatePlayByPlay, updatePoints } from './actions/index.js';
+import { updateMissedShots, updateRebounds, updateTurnovers} from './actions/index.js'
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
 
@@ -184,40 +185,56 @@ export class App extends Component {
           let tempLineup = {...this.props.lineupArray[index]};
           //if the play involves a wake player
           if(wakePlay){
+            //if a basket was made
             if(details.includes('made')){
+              let assisted = false;
+              if(details.includes('assist')){
+                assisted = true;
+              }
               if(details.includes('free throw')){
-                //console.log('made Free Throw')
+                this.props.updatePoints(
+                  'ADD_FREE_THROW',
+                  index,
+                  wakePlay,
+                  assisted
+                );
               }
               else if(details.includes('three point')){
-                //console.log('made Three Pointer');
+                this.props.updatePoints(
+                  'ADD_THREE_POINTER',
+                  index,
+                  wakePlay,
+                  assisted
+                );
               }
               else{
-                //console.log('made 2 pointer')
-              }
-              //if the basket was assisted
-              if(details.includes('assist')){
-                //console.log('assist')
+                this.props.updatePoints(
+                  'ADD_TWO_POINTER',
+                  index,
+                  wakePlay,
+                  assisted
+                );
               }
             }
+            //if the basket was missed
             else if(details.includes('missed')){
               if(details.includes('free throw')){
-                //console.log('missed free throw')
+                //Nothing, not tracking FT%
               }
               else if(details.includes('three point')){
-                //console.log('missed Three Pointer');
               }
               else{
                 //console.log('missed 2 pointer')
               }
             }
             else if(details.includes('defensive rebound')){
-              //console.log('Defensive Rebound')
+              this.props.updateRebounds('ADD_DEFENSIVE_REBOUND', index, wakePlay)
             }
             else if(details.includes('offensive rebound')){
-              //console.log('Offensive Rebound')
+              this.props.updateRebounds('ADD_OFFENSIVE_REBOUND', index, wakePlay)
             }
             else if(details.includes('turnover')){
-              //console.log('turnover');
+              this.props.updateTurnovers(index, wakePlay)
             }
           }
           else{
@@ -301,6 +318,7 @@ export class App extends Component {
                 <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
                 <p><button type = "button">Finished</button></p>
                 <p><button type = "button" onClick = {this.test}>Test</button></p>
+                <p><button type = "button">Show Results</button></p>
               </div>
             </div>
           </div>
@@ -322,6 +340,10 @@ export class App extends Component {
   changeIndex: (index) => dispatch(changeIndex(index)),
   changeHalf: (half) => dispatch(changeHalf(half)),
   updatePlayByPlay: (text) => dispatch(updatePlayByPlay(text)),
+  updatePoints: (type,index, wakePlay, assisted)=> dispatch(updatePoints(type, index, wakePlay, assisted)),
+  updateMissedShots: (type,index,wakePlay)=> dispatch(updateMissedShots(type,index, wakePlay)),
+  updateRebounds: (type, index, wakePlay)=> dispatch(updateRebounds(type,index,wakePlay)),
+  updateTurnovers: (index, wakePlay) => dispatch(updateTurnovers(index,wakePlay))
 
 });
 const mapStateToProps = store => ({
