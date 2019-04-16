@@ -28,18 +28,7 @@ class Lineup {
     this.assistsFor = 0;
     this.assistsAgainst = 0;
   }
-  get possFor(){
-    return this.madeShotsAgainst + this.oRebFor + this.dRebFor + this.turnoversAgainst;
-  }
-  get possAgainst(){
-    return this.madeShots + this.oRebAgainst + this.dRebAgainst + this.turnovers;
-  }
-  get totalReboundsFor(){
-    return this.oRebFor + this.dRebFor;
-  }
-  get totalReboundsAgainst(){
-    return this.oRebAgainst + this.dRebAgainst;
-  }
+
 }
 
 export default Lineup

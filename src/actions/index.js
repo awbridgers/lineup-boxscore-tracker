@@ -66,3 +66,7 @@ export const updateTurnovers = (index, wakePlay) =>({
   index,
   wakePlay
 })
+
+export const changeResults = () =>({
+  type: 'CHANGE_SHOW_RESULTS'
+})

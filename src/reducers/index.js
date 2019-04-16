@@ -5,6 +5,7 @@ import { lineupArray } from './lineupArray.js';
 import { lineupIndex } from './lineupIndex.js';
 import { half } from './half.js'
 import { playByPlay } from './playbyplay.js';
+import { showResults } from './showResults.js'
 
 
 const rootReducer = combineReducers({
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   lineupIndex,
   half,
   playByPlay,
+  showResults
 });
 
 

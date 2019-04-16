@@ -4,8 +4,9 @@ import roster from './roster.js';
 import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
-import { changeIndex, changeHalf, updatePlayByPlay, updatePoints } from './actions/index.js';
+import { changeIndex, changeHalf, updatePlayByPlay, updatePoints, changeResults } from './actions/index.js';
 import { updateMissedShots, updateRebounds, updateTurnovers} from './actions/index.js'
+import Results from './components/results.js';
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
 
@@ -84,6 +85,15 @@ export class App extends Component {
       value = minutes + seconds
     }
     return value;
+  }
+  getTime = (lineup)=>{
+    let time = 0;
+    let timeArray = [...lineup.firstHalfArray,...lineup.secondHalfArray];
+    for(let i=0; i< timeArray.length; i+=2){
+      time += (timeArray[i] - timeArray[i+1])
+    }
+    console.log(timeArray)
+    return time;
   }
   findLineup = players => {
     let index = -1
@@ -182,153 +192,120 @@ export class App extends Component {
         if(index !== -1){
           const wakePlay = this.stringIncludes(play.details);
           const details = play.details.toLowerCase();
-          let tempLineup = {...this.props.lineupArray[index]};
-          //if the play involves a wake player
-          if(wakePlay){
             //if a basket was made
-            if(details.includes('made')){
-              let assisted = false;
-              if(details.includes('assist')){
-                assisted = true;
-              }
-              if(details.includes('free throw')){
-                this.props.updatePoints(
-                  'ADD_FREE_THROW',
-                  index,
-                  wakePlay,
-                  assisted
-                );
-              }
-              else if(details.includes('three point')){
-                this.props.updatePoints(
-                  'ADD_THREE_POINTER',
-                  index,
-                  wakePlay,
-                  assisted
-                );
-              }
-              else{
-                this.props.updatePoints(
-                  'ADD_TWO_POINTER',
-                  index,
-                  wakePlay,
-                  assisted
-                );
-              }
+          if(details.includes('made')){
+            let assisted = false;
+            if(details.includes('assist')){
+              assisted = true;
             }
-            //if the basket was missed
-            else if(details.includes('missed')){
-              if(details.includes('free throw')){
-                //Nothing, not tracking FT%
-              }
-              else if(details.includes('three point')){
-              }
-              else{
-                //console.log('missed 2 pointer')
-              }
+            if(details.includes('free throw')){
+              this.props.updatePoints(
+                'ADD_FREE_THROW',
+                index,
+                wakePlay,
+                assisted
+              );
             }
-            else if(details.includes('defensive rebound')){
-              this.props.updateRebounds('ADD_DEFENSIVE_REBOUND', index, wakePlay)
+            else if(details.includes('three point')){
+              this.props.updatePoints(
+                'ADD_THREE_POINTER',
+                index,
+                wakePlay,
+                assisted
+              );
             }
-            else if(details.includes('offensive rebound')){
-              this.props.updateRebounds('ADD_OFFENSIVE_REBOUND', index, wakePlay)
-            }
-            else if(details.includes('turnover')){
-              this.props.updateTurnovers(index, wakePlay)
+            else{
+              this.props.updatePoints(
+                'ADD_TWO_POINTER',
+                index,
+                wakePlay,
+                assisted
+              );
             }
           }
-          else{
-            //not a wake play
-            if(details.includes('made')){
-              if(details.includes('free throw')){
-                //console.log('made Free Throw')
-              }
-              else if(details.includes('three point')){
-                //console.log('made Three Pointer');
-              }
-              else{
-                //console.log('made 2 pointer')
-              }
-              //if the basket was assisted
-              if(details.includes('assist')){
-                //console.log('assist')
-              }
+          //if the basket was missed
+          else if(details.includes('missed')){
+            if(details.includes('free throw')){
+              //Nothing, not tracking FT%
             }
-            else if(details.includes('missed')){
-              if(details.includes('free throw')){
-                //console.log('missed free throw')
-              }
-              else if(details.includes('three point')){
-                //console.log('missed Three Pointer');
-              }
-              else{
-                //console.log('missed 2 pointer')
-              }
+            else if(details.includes('three point')){
+              this.props.updateMissedShots('ADD_MISSED_THREE_POINTER',index, wakePlay)
             }
-            else if(details.includes('defensive rebound')){
-              //console.log('Defensive Rebound')
+            else{
+              this.props.updateMissedShots('ADD_MISSED_TWO_POINTER',index, wakePlay)
             }
-            else if(details.includes('offensive rebound')){
-              //console.log('Offensive Rebound')
-            }
-            else if(details.includes('turnover')){
-              //console.log('turnover');
-            }
+          }
+          else if(details.includes('defensive rebound')){
+            this.props.updateRebounds('ADD_DEFENSIVE_REBOUND', index, wakePlay)
+          }
+          else if(details.includes('offensive rebound')){
+            this.props.updateRebounds('ADD_OFFENSIVE_REBOUND', index, wakePlay)
+          }
+          else if(details.includes('turnover')){
+            this.props.updateTurnovers(index, wakePlay)
           }
         }
       }
     })
   }
   render() {
-    return (
-      <div className="App">
-        <div className = "container">
-          <div className = "left">
-            <div className = 'gameInfo'>
-              <div className = 'time'>
-                Time: <input style = {{width:"50px"}} type="text" name = 'time' value = {this.props.time} onChange = {this.changeTime}/>
-                Half: {this.props.half}
-              </div>
-              <div className = "lineupInfo">
-                <div className = "inTheGame">
-                  <p>Current Lineup</p>
-                  <NamePlate id = '0' name = {this.props.currentLineup[0]} onClick = {this.removePlayer}/>
-                  <NamePlate id = '1' name = {this.props.currentLineup[1]} onClick = {this.removePlayer}/>
-                  <NamePlate id = '2' name = {this.props.currentLineup[2]} onClick = {this.removePlayer}/>
-                  <NamePlate id = '3' name = {this.props.currentLineup[3]} onClick = {this.removePlayer}/>
-                  <NamePlate id = '4' name = {this.props.currentLineup[4]} onClick = {this.removePlayer}/>
-                  <p><button className = "lineupSubmit" type = "button" onClick = {this.submitLineup}>Submit Lineup</button></p>
+    if(this.props.showResults){
+      return (
+        <Results lineupArray = {this.props.lineupArray} getTime = {this.getTime}
+          changeResults = {this.props.changeResults}/>
+      )
+    }
+    else{
+      return (
+        <div className="App">
+          <div className = "container">
+            <div className = "left">
+              <div className = 'gameInfo'>
+                <div className = 'time'>
+                  Time: <input style = {{width:"50px"}} type="text" name = 'time' value = {this.props.time} onChange = {this.changeTime}/>
+                  Half: {this.props.half}
                 </div>
-                <div className = 'playerBank'>
-                  <p>Available Players</p>
-                  {roster.sort().map((player,i) => {
-                    return(
-                      player !== this.props.currentLineup[0] && player !== this.props.currentLineup[1] && player !== this.props.currentLineup[2] &&
-                        player !== this.props.currentLineup[3] && player !== this.props.currentLineup[4] &&
-                        <button  key = {i} onClick = {this.addPlayer} id = {player} type = 'button'>{player}</button>
-                      )
-                    })
-                  }
+                <div className = "lineupInfo">
+                  <div className = "inTheGame">
+                    <p>Current Lineup</p>
+                    <NamePlate id = '0' name = {this.props.currentLineup[0]} onClick = {this.removePlayer}/>
+                    <NamePlate id = '1' name = {this.props.currentLineup[1]} onClick = {this.removePlayer}/>
+                    <NamePlate id = '2' name = {this.props.currentLineup[2]} onClick = {this.removePlayer}/>
+                    <NamePlate id = '3' name = {this.props.currentLineup[3]} onClick = {this.removePlayer}/>
+                    <NamePlate id = '4' name = {this.props.currentLineup[4]} onClick = {this.removePlayer}/>
+                    <p><button className = "lineupSubmit" type = "button" onClick = {this.submitLineup}>Submit Lineup</button></p>
+                  </div>
+                  <div className = 'playerBank'>
+                    <p>Available Players</p>
+                    {roster.sort().map((player,i) => {
+                      return(
+                        player !== this.props.currentLineup[0] && player !== this.props.currentLineup[1] && player !== this.props.currentLineup[2] &&
+                          player !== this.props.currentLineup[3] && player !== this.props.currentLineup[4] &&
+                          <button  key = {i} onClick = {this.addPlayer} id = {player} type = 'button'>{player}</button>
+                        )
+                      })
+                    }
+                  </div>
+                </div>
+              </div>
+                <div className = 'resultsButtonContainer'>
+                  <div className = 'resultsButton'>
+                  <p><button type ='button' onClick = {this.endHalf}>End Half</button></p>
+                  <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
+                  <p><button type = "button">Finished</button></p>
+                  <p><button type = "button" onClick = {this.test}>Test</button></p>
+                  <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
                 </div>
               </div>
             </div>
-              <div className = 'resultsButtonContainer'>
-                <div className = 'resultsButton'>
-                <p><button type ='button' onClick = {this.endHalf}>End Half</button></p>
-                <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
-                <p><button type = "button">Finished</button></p>
-                <p><button type = "button" onClick = {this.test}>Test</button></p>
-                <p><button type = "button">Show Results</button></p>
-              </div>
+            <div className = 'right'>
+              <textarea type = 'text' name = 'plays' value = {this.props.playByPlay} onChange = {this.updateText}
+                placeholder = 'Enter play by play data here after you have finished tracking lineups'></textarea>
             </div>
-          </div>
-          <div className = 'right'>
-            <textarea type = 'text' name = 'plays' value = {this.props.playByPlay} onChange = {this.updateText}
-              placeholder = 'Enter play by play data here after you have finished tracking lineups'></textarea>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
  const mapDispatchToProps = dispatch =>({
@@ -343,9 +320,10 @@ export class App extends Component {
   updatePoints: (type,index, wakePlay, assisted)=> dispatch(updatePoints(type, index, wakePlay, assisted)),
   updateMissedShots: (type,index,wakePlay)=> dispatch(updateMissedShots(type,index, wakePlay)),
   updateRebounds: (type, index, wakePlay)=> dispatch(updateRebounds(type,index,wakePlay)),
-  updateTurnovers: (index, wakePlay) => dispatch(updateTurnovers(index,wakePlay))
+  updateTurnovers: (index, wakePlay) => dispatch(updateTurnovers(index,wakePlay)),
+  changeResults: ()=> dispatch(changeResults()),
 
-});
+  });
 const mapStateToProps = store => ({
   currentLineup: store.currentLineup,
   time: store.time,
@@ -353,6 +331,7 @@ const mapStateToProps = store => ({
   lineupIndex: store.lineupIndex,
   half: store.half,
   playByPlay: store.playByPlay,
+  showResults: store.showResults,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

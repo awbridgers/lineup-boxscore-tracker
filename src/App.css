@@ -75,8 +75,8 @@ table.currentLineup tr td {
   color: white;
   width: 99%;
   text-align: center;
-  margin: 0px;
-
+  margin-top: 10px;
+  font-size: 12px;
   border-collapse: collapse;
 
 }
@@ -93,7 +93,7 @@ table.report th {
 
 }
 #lineupTH{
-  width: 50%;
+  width: 10%;
 }
 
 .reportButtons{
