@@ -70,3 +70,14 @@ export const updateTurnovers = (index, wakePlay) =>({
 export const changeResults = () =>({
   type: 'CHANGE_SHOW_RESULTS'
 })
+
+export const missedFreeThrow = (index,wakePlay) =>({
+  type: 'ADD_MISSED_FREE_THROW',
+  index,
+  wakePlay
+})
+
+export const lineupChanged = (bool) =>({
+  type: 'LINEUP_CHANGE',
+  bool
+})

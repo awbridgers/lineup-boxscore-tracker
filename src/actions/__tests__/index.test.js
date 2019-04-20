@@ -71,4 +71,12 @@ describe('actions',()=>{
       }
     )
   })
+  it('passes the right action for lineup changing',()=>{
+    expect(actions.lineupChanged(true)).toEqual(
+      {
+        type: 'LINEUP_CHANGE',
+        bool: true
+      }
+    )
+  })
 })
