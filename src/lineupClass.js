@@ -27,6 +27,8 @@ class Lineup {
     this.turnoversAgainst = 0;
     this.assistsFor = 0;
     this.assistsAgainst = 0;
+    this.FTAfor = 0;
+    this.FTAagainst = 0;
   }
 
 }
