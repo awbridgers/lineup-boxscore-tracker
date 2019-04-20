@@ -6,8 +6,8 @@ let testLineup = new Lineup([
   'Chaundee Brown',
   'Jaylen Hoard',
   'Olivier Sarr'],1200,1);
-  testLineup.firstHalfArray = [1200,0];
-  testLineup.secondHalfArray = [1200,0];
+  testLineup.firstHalfArray = [2000,0];
+  testLineup.secondHalfArray = [2000,0];
 
 
 

@@ -9,8 +9,20 @@ import { updateMissedShots, updateRebounds, updateTurnovers} from './actions/ind
 import Results from './components/results.js';
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
+import { CSVLink } from "react-csv";
 
 export class App extends Component {
+  constructor(){
+    super();
+    this.headers = [{label:'Lineup', key: 'players'},
+    {label: 'First Half', key: 'firstHalfArray'},
+    {label:'Second Half', key: 'secondHalfArray'}]
+  }
+  componentDidUpdate(){
+    this.props.lineupArray.forEach((lineup)=>{
+
+    })
+  }
   addPlayer = (e) =>{
     let playerName = e.target.id;
     for(let i = 0; i< 5; i++){
@@ -42,7 +54,7 @@ export class App extends Component {
   submitLineup = () =>{
     const sortedPlayerArray = this.props.currentLineup.slice().sort();
     const oldIndex = this.props.lineupIndex;
-    const time = this.fixTime(this.props.time);
+    const time = this.props.time;
     const arrayLength = this.props.lineupArray.length;
     //if its the first lineup of the game, create and push
     if(this.props.lineupArray.length === 0){
@@ -90,7 +102,7 @@ export class App extends Component {
     let time = 0;
     let timeArray = [...lineup.firstHalfArray,...lineup.secondHalfArray];
     for(let i=0; i< timeArray.length; i+=2){
-      time += (timeArray[i] - timeArray[i+1])
+      time += (this.fixTime(timeArray[i]) - this.fixTime(timeArray[i+1]))
     }
     console.log(timeArray)
     return time;
@@ -156,7 +168,7 @@ export class App extends Component {
         let play = line.split('\t')
         if(typeof play[2]!== 'undefined'){
           firstHalfPlays.push({
-            time: this.fixTime(play[0].replace(':','')),
+            time: play[0].replace(':',''),
             details: play[2]
           })
         }
@@ -248,6 +260,9 @@ export class App extends Component {
       }
     })
   }
+  setCSV = () =>{
+
+  }
   render() {
     if(this.props.showResults){
       return (
@@ -295,6 +310,7 @@ export class App extends Component {
                   <p><button type = "button">Finished</button></p>
                   <p><button type = "button" onClick = {this.test}>Test</button></p>
                   <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
+                  <p><button><CSVLink data={this.props.lineupArray} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
                 </div>
               </div>
             </div>
