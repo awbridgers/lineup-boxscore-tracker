@@ -25,8 +25,6 @@ const Results = (props) =>(
           <th>AA</th>
           <th>TOF</th>
           <th>TOA</th>
-          <th>PossF</th>
-          <th>PossA</th>
         </tr>
         {props.lineupArray.map((lineup, i)=>{
           return (
@@ -51,8 +49,6 @@ const Results = (props) =>(
               <td>{lineup.assistsAgainst}</td>
               <td>{lineup.turnoversFor}</td>
               <td>{lineup.turnoversAgainst}</td>
-              <td>PossF</td>
-              <td>PossA</td>
             </tr>
           )
         })}
