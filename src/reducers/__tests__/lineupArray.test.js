@@ -24,7 +24,9 @@ const defaultLineup = {
   missedThreesFor : 0,
   missedThreesAgainst : 0,
   assistsFor: 0,
-  assistsAgainst: 0
+  assistsAgainst: 0,
+  FTAfor: 0,
+  FTAagainst: 0
 }
 const anotherLineup = {
     players: ['Ikenna Smart','Sharone Wright','Chaundee Brown','Jaylen Hoard','Olivier Sarr'],
@@ -47,7 +49,9 @@ const anotherLineup = {
     missedThreesFor : 0,
     missedThreesAgainst : 0,
     assistsFor: 0,
-    assistsAgainst: 0
+    assistsAgainst: 0,
+    FTAfor: 0,
+    FTAagainst: 0
   }
 describe('lineupArray reducer',()=>{
   it('it returns the initial state',()=>{
@@ -77,7 +81,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         }
       ]
     )
@@ -104,7 +110,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         },
         {
           players: ['Ikenna Smart','Sharone Wright','Chaundee Brown','Jaylen Hoard','Olivier Sarr'],
@@ -127,7 +135,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         }
       ]
     )
@@ -156,7 +166,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         },
         {
           players: ['Ikenna Smart','Sharone Wright','Chaundee Brown','Jaylen Hoard','Olivier Sarr'],
@@ -179,7 +191,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         }
       ]
     )
@@ -206,7 +220,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         },
         {
           players: ['Ikenna Smart','Sharone Wright','Chaundee Brown','Jaylen Hoard','Olivier Sarr'],
@@ -229,7 +245,9 @@ describe('lineupArray reducer',()=>{
           missedThreesFor : 0,
           missedThreesAgainst : 0,
           assistsFor: 0,
-          assistsAgainst: 0
+          assistsAgainst: 0,
+          FTAfor: 0,
+          FTAagainst: 0
         }
       ]
     )
@@ -241,14 +259,14 @@ describe('lineupArray reducer',()=>{
       assisted:false
     })).toEqual([
       {
-        ...defaultLineup, pointsFor: defaultLineup.pointsFor+1
+        ...defaultLineup, pointsFor: defaultLineup.pointsFor+1, FTAfor: 1
       }]
     )
     expect(lineupArray([defaultLineup,anotherLineup],{
       type:'ADD_FREE_THROW',
       index:0, wakePlay: false, assisted: false})).toEqual([
         {
-          ...defaultLineup, pointsAgainst : defaultLineup.pointsAgainst + 1
+          ...defaultLineup, pointsAgainst : defaultLineup.pointsAgainst + 1, FTAagainst: 1
         },
         anotherLineup
       ]

@@ -6,8 +6,8 @@ let testLineup = new Lineup([
   'Chaundee Brown',
   'Jaylen Hoard',
   'Olivier Sarr'],1200,1);
-  testLineup.firstHalfArray = [2000,0];
-  testLineup.secondHalfArray = [2000,0];
+  testLineup.firstHalfArray = [1200,0];
+  testLineup.secondHalfArray = [1200,0];
 
 
 
@@ -32,11 +32,12 @@ export const lineupArray = (state = [testLineup], action) => {
       })
       case 'ADD_FREE_THROW':
         const pointsKey = (action.wakePlay) ? 'pointsFor' : 'pointsAgainst'
+        const freeThrowKey = (action.wakePlay) ? 'FTAfor' : 'FTAagainst'
         return state.map((lineup,index)=>{
           if(index !== action.index){
             return lineup;
           }
-          return {...lineup, [pointsKey]: lineup[pointsKey] + 1}
+          return {...lineup, [pointsKey]: lineup[pointsKey] + 1, [freeThrowKey]: lineup[freeThrowKey] + 1}
         })
         case 'ADD_THREE_POINTER':
           const threePointsKey = (action.wakePlay) ? 'pointsFor' : 'pointsAgainst';
@@ -79,6 +80,14 @@ export const lineupArray = (state = [testLineup], action) => {
                   return lineup;
                 }
                 return {...lineup, [missedThreeKey]: lineup[missedThreeKey] + 1}
+              })
+            case 'ADD_MISSED_FREE_THROW':
+              const missedFTKey = (action.wakePlay)? 'FTAfor':'FTAagainst';
+              return state.map((lineup,index)=>{
+                if(index !== action.index){
+                  return lineup;
+                }
+                return {...lineup, [missedFTKey]: lineup[missedFTKey] + 1}
               })
           case 'ADD_OFFENSIVE_REBOUND':
             const oRebKey = (action.wakePlay) ? 'oRebFor' : 'oRebAgainst';
