@@ -5,7 +5,7 @@ import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
 import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
 import { changeIndex, changeHalf, updatePlayByPlay, updatePoints, changeResults } from './actions/index.js';
-import { updateMissedShots, updateRebounds, updateTurnovers} from './actions/index.js'
+import { updateMissedShots, updateRebounds, updateTurnovers, missedFreeThrow, lineupChanged} from './actions/index.js'
 import Results from './components/results.js';
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
@@ -35,6 +35,7 @@ export class App extends Component {
   removePlayer = (e) =>{
     const playerID = e.target.id;
     this.props.removePlayer(playerID);
+    this.props.lineupChanged(true);
   }
   changeTime = (e) =>{
     if(!isNaN(e.target.value)){
@@ -54,7 +55,7 @@ export class App extends Component {
   submitLineup = () =>{
     const sortedPlayerArray = this.props.currentLineup.slice().sort();
     const oldIndex = this.props.lineupIndex;
-    const time = this.props.time;
+    const time = this.fixTime(this.props.time);
     const arrayLength = this.props.lineupArray.length;
     //if its the first lineup of the game, create and push
     if(this.props.lineupArray.length === 0){
@@ -80,6 +81,7 @@ export class App extends Component {
         this.props.changeIndex(newIndex);
       }
     }
+    this.props.lineupChanged(true);
   }
   fixTime = time =>{
     let value = null;
@@ -102,7 +104,7 @@ export class App extends Component {
     let time = 0;
     let timeArray = [...lineup.firstHalfArray,...lineup.secondHalfArray];
     for(let i=0; i< timeArray.length; i+=2){
-      time += (this.fixTime(timeArray[i]) - this.fixTime(timeArray[i+1]))
+      time += (timeArray[i] - timeArray[i+1])
     }
     console.log(timeArray)
     return time;
@@ -168,7 +170,7 @@ export class App extends Component {
         let play = line.split('\t')
         if(typeof play[2]!== 'undefined'){
           firstHalfPlays.push({
-            time: play[0].replace(':',''),
+            time: this.fixTime(play[0].replace(':','')),
             details: play[2]
           })
         }
@@ -238,7 +240,7 @@ export class App extends Component {
           //if the basket was missed
           else if(details.includes('missed')){
             if(details.includes('free throw')){
-              //Nothing, not tracking FT%
+              this.props.missedFreeThrow(index, wakePlay)
             }
             else if(details.includes('three point')){
               this.props.updateMissedShots('ADD_MISSED_THREE_POINTER',index, wakePlay)
@@ -282,7 +284,8 @@ export class App extends Component {
                 </div>
                 <div className = "lineupInfo">
                   <div className = "inTheGame">
-                    <p>Current Lineup</p>
+                    <p style = {this.props.changedLineup ? {backgroundColor: 'red'}:
+                      {backgroundColor: 'transparent'}}>Current Lineup</p>
                     <NamePlate id = '0' name = {this.props.currentLineup[0]} onClick = {this.removePlayer}/>
                     <NamePlate id = '1' name = {this.props.currentLineup[1]} onClick = {this.removePlayer}/>
                     <NamePlate id = '2' name = {this.props.currentLineup[2]} onClick = {this.removePlayer}/>
@@ -338,6 +341,8 @@ export class App extends Component {
   updateRebounds: (type, index, wakePlay)=> dispatch(updateRebounds(type,index,wakePlay)),
   updateTurnovers: (index, wakePlay) => dispatch(updateTurnovers(index,wakePlay)),
   changeResults: ()=> dispatch(changeResults()),
+  missedFreeThrow: (index,wakePlay)=>dispatch(missedFreeThrow(index,wakePlay)),
+  lineupChanged: (bool)=>dispatch(lineupChanged(bool)),
 
   });
 const mapStateToProps = store => ({
@@ -348,6 +353,7 @@ const mapStateToProps = store => ({
   half: store.half,
   playByPlay: store.playByPlay,
   showResults: store.showResults,
+  changedLineup: store.changedLineup,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

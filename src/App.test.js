@@ -28,6 +28,7 @@ const props = {
   changeIndex: jest.fn(),
   changeHalf: jest.fn(),
   updatePlayByPlay: jest.fn(),
+  lineupChanged: jest.fn(),
   currentLineup: [
     'Brandon Childress',
     'Sharone Wright',
@@ -65,7 +66,7 @@ describe('App Component',()=>{
   })
   it('renders all the results buttons',()=>{
     expect(wrapper.find('div.resultsButtonContainer').find('button').length)
-    .toEqual(5)
+    .toEqual(6)
   })
   it('renders the play by play box',()=>{
     expect(wrapper.find('div.right').find('textarea').length).toEqual(1);
