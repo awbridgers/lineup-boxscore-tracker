@@ -18,6 +18,8 @@ export const lineupArray = (state = [testLineup], action) => {
       let newArray = state.slice();
       newArray.push(action.lineup);
       return newArray;
+    case 'UPLOAD_LINEUP':
+      return action.array
     case 'ADD_TIME_TO_LINEUP':
       return state.map((lineup, index)=>{
         if(index !== action.index){

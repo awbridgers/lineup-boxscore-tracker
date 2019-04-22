@@ -490,4 +490,28 @@ describe('lineupArray reducer',()=>{
       anotherLineup
     ])
   })
+  it('adds free throw attempts for both teams',()=>{
+    expect(lineupArray([defaultLineup,anotherLineup],{
+      type: 'ADD_MISSED_FREE_THROW',
+      index :0,
+      wakePlay: false
+    })).toEqual([{
+      ...defaultLineup, FTAagainst: defaultLineup.FTAagainst + 1
+    },
+    anotherLineup])
+    expect(lineupArray([defaultLineup,anotherLineup],{
+      type: 'ADD_MISSED_FREE_THROW',
+      index :0,
+      wakePlay: true
+    })).toEqual([{
+      ...defaultLineup, FTAfor: defaultLineup.FTAfor + 1
+    },
+    anotherLineup])
+  })
+  it('uploads a lineup',()=>{
+    expect(lineupArray(defaultLineup,{
+      type: 'UPLOAD_LINEUP',
+      array: [anotherLineup]
+    })).toEqual([anotherLineup])
+  })
 })
