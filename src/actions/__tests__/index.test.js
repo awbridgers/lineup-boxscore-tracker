@@ -79,4 +79,26 @@ describe('actions',()=>{
       }
     )
   })
+  it('passes the right action for uploading lineup',()=>{
+    expect(actions.uploadLineup([test])).toEqual(
+      {
+        type: 'UPLOAD_LINEUP',
+        array: [test]
+      }
+    )
+  })
+  it('passes the right action for adding FTA on missed Free Throw',()=>{
+    expect(actions.missedFreeThrow(0,true)).toEqual(
+      {
+        type: 'ADD_MISSED_FREE_THROW',
+        index: 0,
+        wakePlay: true
+      }
+    )
+  })
+  it('passes the right action for showing results',()=>{
+    expect(actions.changeResults()).toEqual({
+      type: 'CHANGE_SHOW_RESULTS'
+    })
+  })
 })

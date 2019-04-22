@@ -81,3 +81,8 @@ export const lineupChanged = (bool) =>({
   type: 'LINEUP_CHANGE',
   bool
 })
+
+export const uploadLineup = (array) =>({
+  type: 'UPLOAD_LINEUP',
+  array
+})
