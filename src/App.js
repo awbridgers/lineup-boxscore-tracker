@@ -3,13 +3,13 @@ import './App.css';
 import roster from './roster.js';
 import NamePlate from './components/namePlate.js';
 import { connect } from 'react-redux';
-import { removePlayer, addPlayer, updateTime, addLineup, addTimeToLineup } from './actions/index.js';
-import { changeIndex, changeHalf, updatePlayByPlay, updatePoints, changeResults } from './actions/index.js';
-import { updateMissedShots, updateRebounds, updateTurnovers, missedFreeThrow, lineupChanged} from './actions/index.js'
+import * as actions from './actions/index.js'
 import Results from './components/results.js';
 import Lineup from './lineupClass.js';
 import equals from 'array-equal';
 import { CSVLink } from "react-csv";
+import Uploader from './components/uploader.js'
+import XLSX from 'xlsx';
 
 export class App extends Component {
   constructor(){
@@ -81,7 +81,7 @@ export class App extends Component {
         this.props.changeIndex(newIndex);
       }
     }
-    this.props.lineupChanged(true);
+    this.props.lineupChanged(false);
   }
   fixTime = time =>{
     let value = null;
@@ -106,7 +106,6 @@ export class App extends Component {
     for(let i=0; i< timeArray.length; i+=2){
       time += (timeArray[i] - timeArray[i+1])
     }
-    console.log(timeArray)
     return time;
   }
   findLineup = players => {
@@ -262,8 +261,40 @@ export class App extends Component {
       }
     })
   }
-  setCSV = () =>{
-
+  uploadLineup = (e) =>{
+    if(window.confirm('Uploading a lineup wille erase all previously recorded data. Continue?')){
+      let files = e.target.files, f = files[0]
+      let reader = new FileReader();
+      reader.onload = (e)=>{
+        try{
+          let data = new Uint8Array(e.target.result);
+          let workbook = XLSX.read(data, {type: 'array'});
+          let lineupData = workbook.Sheets[workbook.SheetNames[0]]
+          let dataArray = [];
+          let lineupArray = [];
+          //iterate through all the cells
+          Object.keys(lineupData).forEach((cell)=>{
+            if(typeof(lineupData[cell].v) !== 'undefined'){
+              //if the cell has data, push it to the array
+              dataArray.push(lineupData[cell].v)
+            }
+          })
+          //loop through array (ignoring headers) and create a lineup with the data in each row
+          for(let i = 3; i<= dataArray.length-3; i+=3){
+            let tempLineup = new Lineup(dataArray[i].split(',').sort(),0,1);
+            tempLineup.firstHalfArray = dataArray[i+1].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
+            tempLineup.secondHalfArray = dataArray[i+2].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
+            lineupArray.push(tempLineup)
+            console.log(i, dataArray.length)
+          }
+          this.props.importLineup(lineupArray)
+        }
+        catch(err){
+          window.alert(err)
+        }
+      }
+    reader.readAsArrayBuffer(f);
+    }
   }
   render() {
     if(this.props.showResults){
@@ -291,7 +322,6 @@ export class App extends Component {
                     <NamePlate id = '2' name = {this.props.currentLineup[2]} onClick = {this.removePlayer}/>
                     <NamePlate id = '3' name = {this.props.currentLineup[3]} onClick = {this.removePlayer}/>
                     <NamePlate id = '4' name = {this.props.currentLineup[4]} onClick = {this.removePlayer}/>
-                    <p><button className = "lineupSubmit" type = "button" onClick = {this.submitLineup}>Submit Lineup</button></p>
                   </div>
                   <div className = 'playerBank'>
                     <p>Available Players</p>
@@ -305,6 +335,11 @@ export class App extends Component {
                     }
                   </div>
                 </div>
+                <div className = 'lineupButtons'>
+                  <button className = "lineupSubmit" type = "button" onClick = {this.submitLineup}>Submit Lineup</button>
+                  <Uploader uploadLineup = {this.uploadLineup}/>
+
+                </div>
               </div>
                 <div className = 'resultsButtonContainer'>
                   <div className = 'resultsButton'>
@@ -313,7 +348,11 @@ export class App extends Component {
                   <p><button type = "button">Finished</button></p>
                   <p><button type = "button" onClick = {this.test}>Test</button></p>
                   <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
-                  <p><button><CSVLink data={this.props.lineupArray} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
+                  <p><button><CSVLink data={this.props.lineupArray.map((lineup)=>{
+                      let firstArray = (lineup.firstHalfArray.length > 0) ? lineup.firstHalfArray : ['none'];
+                      let secondArray = (lineup.secondHalfArray.length > 0) ? lineup.secondHalfArray : ['none'];
+                      return {players: lineup.players, firstHalfArray: firstArray, secondHalfArray: secondArray}
+                    })} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
                 </div>
               </div>
             </div>
@@ -328,21 +367,22 @@ export class App extends Component {
   }
 }
  const mapDispatchToProps = dispatch =>({
-  removePlayer: (ID) => dispatch(removePlayer(ID)),
-  addPlayer: (name,ID) => dispatch(addPlayer(name,ID)),
-  updateTime: (time)=> dispatch(updateTime(time)),
-  addLineup: (lineup)=> dispatch(addLineup(lineup)),
-  addTimeToLineup: (time, index, half)=> dispatch(addTimeToLineup(time,index,half)),
-  changeIndex: (index) => dispatch(changeIndex(index)),
-  changeHalf: (half) => dispatch(changeHalf(half)),
-  updatePlayByPlay: (text) => dispatch(updatePlayByPlay(text)),
-  updatePoints: (type,index, wakePlay, assisted)=> dispatch(updatePoints(type, index, wakePlay, assisted)),
-  updateMissedShots: (type,index,wakePlay)=> dispatch(updateMissedShots(type,index, wakePlay)),
-  updateRebounds: (type, index, wakePlay)=> dispatch(updateRebounds(type,index,wakePlay)),
-  updateTurnovers: (index, wakePlay) => dispatch(updateTurnovers(index,wakePlay)),
-  changeResults: ()=> dispatch(changeResults()),
-  missedFreeThrow: (index,wakePlay)=>dispatch(missedFreeThrow(index,wakePlay)),
-  lineupChanged: (bool)=>dispatch(lineupChanged(bool)),
+  removePlayer: (ID) => dispatch(actions.removePlayer(ID)),
+  addPlayer: (name,ID) => dispatch(actions.addPlayer(name,ID)),
+  updateTime: (time)=> dispatch(actions.updateTime(time)),
+  addLineup: (lineup)=> dispatch(actions.addLineup(lineup)),
+  addTimeToLineup: (time, index, half)=> dispatch(actions.addTimeToLineup(time,index,half)),
+  changeIndex: (index) => dispatch(actions.changeIndex(index)),
+  changeHalf: (half) => dispatch(actions.changeHalf(half)),
+  updatePlayByPlay: (text) => dispatch(actions.updatePlayByPlay(text)),
+  updatePoints: (type,index, wakePlay, assisted)=> dispatch(actions.updatePoints(type, index, wakePlay, assisted)),
+  updateMissedShots: (type,index,wakePlay)=> dispatch(actions.updateMissedShots(type,index, wakePlay)),
+  updateRebounds: (type, index, wakePlay)=> dispatch(actions.updateRebounds(type,index,wakePlay)),
+  updateTurnovers: (index, wakePlay) => dispatch(actions.updateTurnovers(index,wakePlay)),
+  changeResults: ()=> dispatch(actions.changeResults()),
+  missedFreeThrow: (index,wakePlay)=> dispatch(actions.missedFreeThrow(index,wakePlay)),
+  lineupChanged: (bool)=> dispatch(actions.lineupChanged(bool)),
+  importLineup: (array)=> dispatch(actions.uploadLineup(array)),
 
   });
 const mapStateToProps = store => ({

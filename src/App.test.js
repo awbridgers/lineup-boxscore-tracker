@@ -7,6 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux'
 import Lineup from './lineupClass.js'
 
+
 const testFile = '\n0:00\t\tEnd of 1st half\t49 - 21\t\n2nd Half\ntime\tteam\tPLAY\tSCORE\n20:00\t\tJump Ball won by Wake Forest\t49 - 21\t'
 const mockStore = configureMockStore();
 let lineup = new Lineup([
@@ -26,6 +27,7 @@ const props = {
   addLineup: jest.fn(),
   addTimeToLineup: jest.fn(),
   changeIndex: jest.fn(),
+  importLineup: jest.fn(),
   changeHalf: jest.fn(),
   updatePlayByPlay: jest.fn(),
   lineupChanged: jest.fn(),
@@ -98,12 +100,10 @@ describe('App Component',()=>{
     expect(props.addLineup).toHaveBeenCalled();
   })
   it('submits the lineup when not the first lineup',()=>{
-    wrapper.setProps({lineupArray:[{players: ['players']}], currentLineup: ['test']})
     wrapper.find('button.lineupSubmit').simulate('click');
     expect(props.addLineup).toHaveBeenCalled();
   })
   it('adds time to lineup if already exists',()=>{
-    wrapper.setProps({lineupArray:[{players: ['players']}], currentLineup: ['players']})
     wrapper.find('button.lineupSubmit').simulate('click');
     expect(props.addTimeToLineup).toHaveBeenCalled();
   })
@@ -113,8 +113,8 @@ describe('App Component',()=>{
     expect(wrapper.instance().fixTime('0')).toEqual(0);
   })
   it('runs the findLineup function with match',()=>{
-    wrapper.setProps({lineupArray: [{players:['1','2','3','4','5']}]})
-    expect(wrapper.instance().findLineup(['1','2','3','4','5'])).toEqual(0);
+
+    expect(wrapper.instance().findLineup(props.currentLineup)).toEqual(0);
   })
   it('runs the findLineup function without match',()=>{
     expect(wrapper.instance().findLineup(['Test'])).toEqual(-1);
@@ -130,7 +130,7 @@ describe('App Component',()=>{
     expect(wrapper.instance().findTimeGap(1200,1)).toEqual(-1);
   })
   it('returns the lineup index that was on the court for findTimeGap',()=>{
-    wrapper.setProps({lineupArray: [{firstHalfArray:[1200,0]}]})
+    wrapper.setProps({lineupArray: [{firstHalfArray:[1200,0], secondHalfArray:[]}]})
     expect(wrapper.instance().findTimeGap(500,1)).toEqual(0);
   })
   it('runs the changeHalf function',()=>{
@@ -161,5 +161,8 @@ describe('App Component',()=>{
         }]
       }
     )
+  })
+  it('runs the getTime function and returns the total time',()=>{
+    expect(wrapper.instance().getTime(lineup)).toEqual(2400)
   })
 })
