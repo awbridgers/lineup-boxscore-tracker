@@ -18,11 +18,6 @@ export class App extends Component {
     {label: 'First Half', key: 'firstHalfArray'},
     {label:'Second Half', key: 'secondHalfArray'}]
   }
-  componentDidUpdate(){
-    this.props.lineupArray.forEach((lineup)=>{
-
-    })
-  }
   addPlayer = (e) =>{
     let playerName = e.target.id;
     for(let i = 0; i< 5; i++){
@@ -366,7 +361,7 @@ export class App extends Component {
     }
   }
 }
- const mapDispatchToProps = dispatch =>({
+ export const mapDispatchToProps = dispatch =>({
   removePlayer: (ID) => dispatch(actions.removePlayer(ID)),
   addPlayer: (name,ID) => dispatch(actions.addPlayer(name,ID)),
   updateTime: (time)=> dispatch(actions.updateTime(time)),
@@ -375,17 +370,10 @@ export class App extends Component {
   changeIndex: (index) => dispatch(actions.changeIndex(index)),
   changeHalf: (half) => dispatch(actions.changeHalf(half)),
   updatePlayByPlay: (text) => dispatch(actions.updatePlayByPlay(text)),
-  updatePoints: (type,index, wakePlay, assisted)=> dispatch(actions.updatePoints(type, index, wakePlay, assisted)),
-  updateMissedShots: (type,index,wakePlay)=> dispatch(actions.updateMissedShots(type,index, wakePlay)),
-  updateRebounds: (type, index, wakePlay)=> dispatch(actions.updateRebounds(type,index,wakePlay)),
-  updateTurnovers: (index, wakePlay) => dispatch(actions.updateTurnovers(index,wakePlay)),
-  changeResults: ()=> dispatch(actions.changeResults()),
-  missedFreeThrow: (index,wakePlay)=> dispatch(actions.missedFreeThrow(index,wakePlay)),
-  lineupChanged: (bool)=> dispatch(actions.lineupChanged(bool)),
-  importLineup: (array)=> dispatch(actions.uploadLineup(array)),
+
 
   });
-const mapStateToProps = store => ({
+export const mapStateToProps = store => ({
   currentLineup: store.currentLineup,
   time: store.time,
   lineupArray: store.lineupArray,
