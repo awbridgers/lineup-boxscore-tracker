@@ -79,17 +79,16 @@ export class App extends Component {
     this.props.lineupChanged(false);
   }
   fixTime = time =>{
-    let value = null;
-    let newTime = time.toString();
+    let value;
     if(time === "0"){
       value = 0;
     }
-    else if(newTime.length < 3){
-      value = parseInt(newTime,10);
+    else if(time.length < 3){
+      value = parseInt(time,10);
     }
     else{
-      let seconds = parseInt(newTime.substring(newTime.length-2,newTime.length),10);
-      let minutes = parseInt(newTime.slice(0,-2),10);
+      let seconds = parseInt(time.substring(time.length-2,time.length),10);
+      let minutes = parseInt(time.slice(0,-2),10);
       minutes = minutes * 60;
       value = minutes + seconds
     }
@@ -259,6 +258,7 @@ export class App extends Component {
   uploadLineup = (e) =>{
     if(window.confirm('Uploading a lineup wille erase all previously recorded data. Continue?')){
       let files = e.target.files, f = files[0]
+      //console.log(f);
       let reader = new FileReader();
       reader.onload = (e)=>{
         try{
@@ -280,7 +280,7 @@ export class App extends Component {
             tempLineup.firstHalfArray = dataArray[i+1].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
             tempLineup.secondHalfArray = dataArray[i+2].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
             lineupArray.push(tempLineup)
-            console.log(i, dataArray.length)
+            //console.log(i, dataArray.length)
           }
           this.props.importLineup(lineupArray)
         }
@@ -361,15 +361,23 @@ export class App extends Component {
     }
   }
 }
- export const mapDispatchToProps = dispatch =>({
-  removePlayer: (ID) => dispatch(actions.removePlayer(ID)),
-  addPlayer: (name,ID) => dispatch(actions.addPlayer(name,ID)),
-  updateTime: (time)=> dispatch(actions.updateTime(time)),
-  addLineup: (lineup)=> dispatch(actions.addLineup(lineup)),
-  addTimeToLineup: (time, index, half)=> dispatch(actions.addTimeToLineup(time,index,half)),
-  changeIndex: (index) => dispatch(actions.changeIndex(index)),
-  changeHalf: (half) => dispatch(actions.changeHalf(half)),
-  updatePlayByPlay: (text) => dispatch(actions.updatePlayByPlay(text)),
+export const mapDispatchToProps = dispatch =>({
+ removePlayer: (ID) => dispatch(actions.removePlayer(ID)),
+ addPlayer: (name,ID) => dispatch(actions.addPlayer(name,ID)),
+ updateTime: (time)=> dispatch(actions.updateTime(time)),
+ addLineup: (lineup)=> dispatch(actions.addLineup(lineup)),
+ addTimeToLineup: (time, index, half)=> dispatch(actions.addTimeToLineup(time,index,half)),
+ changeIndex: (index) => dispatch(actions.changeIndex(index)),
+ changeHalf: (half) => dispatch(actions.changeHalf(half)),
+ updatePlayByPlay: (text) => dispatch(actions.updatePlayByPlay(text)),
+ updatePoints: (type,index, wakePlay, assisted)=> dispatch(actions.updatePoints(type, index, wakePlay, assisted)),
+ updateMissedShots: (type,index,wakePlay)=> dispatch(actions.updateMissedShots(type,index, wakePlay)),
+ updateRebounds: (type, index, wakePlay)=> dispatch(actions.updateRebounds(type,index,wakePlay)),
+ updateTurnovers: (index, wakePlay) => dispatch(actions.updateTurnovers(index,wakePlay)),
+ changeResults: ()=> dispatch(actions.changeResults()),
+ missedFreeThrow: (index,wakePlay)=> dispatch(actions.missedFreeThrow(index,wakePlay)),
+ lineupChanged: (bool)=> dispatch(actions.lineupChanged(bool)),
+ importLineup: (array)=> dispatch(actions.uploadLineup(array)),
 
 
   });
