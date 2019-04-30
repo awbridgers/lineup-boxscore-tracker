@@ -55,7 +55,7 @@ const anotherLineup = {
   }
 describe('lineupArray reducer',()=>{
   it('it returns the initial state',()=>{
-    expect(lineupArray(undefined,{})).toEqual([defaultLineup])
+    expect(lineupArray(undefined,{})).toEqual([])
   })
   it('adds lineup to the array',()=>{
     expect(lineupArray([],{type:'ADD_LINEUP', lineup: new Lineup(defaultArray, 1200, 1)})).toEqual(

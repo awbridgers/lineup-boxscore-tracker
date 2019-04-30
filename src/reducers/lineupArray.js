@@ -12,7 +12,7 @@ let testLineup = new Lineup([
 
 
 
-export const lineupArray = (state = [testLineup], action) => {
+export const lineupArray = (state = [], action) => {
   switch(action.type){
     case 'ADD_LINEUP':
       let newArray = state.slice();

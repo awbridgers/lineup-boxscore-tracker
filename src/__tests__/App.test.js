@@ -68,6 +68,8 @@ const props = {
   lineupIndex: 0,
   half: 1,
   playByPlay: '',
+  showResults: false,
+  changedLineup: false
 }
 
 
@@ -280,5 +282,12 @@ describe('App Component',()=>{
       }
     });
     expect(window.confirm).toHaveBeenCalled();
+  })
+  it('shows the Results container if showResults true',()=>{
+    wrapper.setProps({showResults: true});
+    expect(wrapper.find('Results')).toBeDefined();
+  })
+  it('does not show results if false',()=>{
+    expect(wrapper.find('div.App')).toBeDefined();
   })
 })
