@@ -17,6 +17,8 @@ export class App extends Component {
     this.headers = [{label:'Lineup', key: 'players'},
     {label: 'First Half', key: 'firstHalfArray'},
     {label:'Second Half', key: 'secondHalfArray'}]
+    this.firstHalfSubShooter = [];
+    this.secondHalfSubShooter = [];
   }
   addPlayer = (e) =>{
     let playerName = e.target.id;
@@ -63,8 +65,12 @@ export class App extends Component {
       //if the lineup does not exist, create it and push it to the array
       if(newIndex === -1){
         let newLineup = new Lineup(sortedPlayerArray, time, this.props.half);
+        //if the time isn't the start of a new half or the end of the old half,
+        //update the previous lineups time
+        if(time !==0 && time !== 1200){
+          this.props.addTimeToLineup(time, oldIndex, this.props.half);
+        }
         this.props.addLineup(newLineup);
-        this.props.addTimeToLineup(time, oldIndex, this.props.half);
         this.props.changeIndex(arrayLength);
       }
       //if the lineup already exists, add the time to its time array
@@ -77,6 +83,10 @@ export class App extends Component {
       }
     }
     this.props.lineupChanged(false);
+  }
+  subShooter = () =>{
+    let array = (this.props.half === 1) ? this.firstHalfSubShooter : this.secondHalfSubShooter
+    array.push(this.fixTime(this.props.time))
   }
   fixTime = time =>{
     let value;
@@ -126,28 +136,57 @@ export class App extends Component {
     })
     return result;
   }
-  findTimeGap = (time,half) =>{
+  findTimeGap = (play,half,nextPlay) =>{
     //find the lineup that was on the court at time
-    let array;
-    if(half === 1){
-      array = 'firstHalfArray';
-    }
-    else if(half === 2){
-      array = 'secondHalfArray'
-    }
-    let lineupArray = this.props.lineupArray;
+    const time = play.time;
+    const details = play.details.toLowerCase();
+    const nextPlayIsAFreeThrow = (typeof(nextPlay) === 'undefined'
+      || typeof(nextPlay) === 'string') ? false : nextPlay.details.toLowerCase().includes('free throw');
+    const lineupArray = this.props.lineupArray;
+    const array = (half === 1) ? 'firstHalfArray' : 'secondHalfArray';
+    const subShooterChecker = (half === 1) ? this.firstHalfSubShooter : this.secondHalfSubShooter;
+    let index = -1;
+    let freeThrowIndex = -1;
     //loop through all the lineups that are in the lineup array
     for(let j = 0; j< lineupArray.length; j++){
       //then, for each lineup, loop through their time arrays
-      const timeArray = lineupArray[j][array]
+      const timeArray = lineupArray[j][array];
       for(let i =0; i< timeArray.length; i+=2){
+        //first thing to check is special cases regarding subs while at the line
+        if(details.includes('free throw') && nextPlayIsAFreeThrow){
+          //sub before the last free throw attempt.
+          //if a lineup was subbed out and wasn't just subbed in, return that
+          //lineup. (lineup coming in and going out at same time would imply
+          //a second sub after the last free throw)
+          if(timeArray[i+1]===time && timeArray[i]!== time){
+            return j;
+          }
+        }
+        //check for sub after the last free throw only
+        else if(details.includes('free throw') && !nextPlayIsAFreeThrow){
+          //lineup with no time on a free throw attempt implies and sub after
+          //both free throws. i.e. lineup for second free throw played no time.
+          //return this lineup for the second free throw.
+          if(time === timeArray[i+1] && timeArray[i] === time){
+            return j;
+          }
+          //if there was a sub after the shooter, i.e both fts to the first lineup
+          else if(time === timeArray[i+1] && subShooterChecker.includes(time)){
+            return j;
+          }
+        }
+        //Done with free throw cases, now
         //if the time argument falls between the time pairs, lineup was on court
         if(timeArray[i] >= time && time > timeArray[i+1]){
-          return j;
+          index = j;
+        }
+        //special case for if something happens as the buzzer is sounding
+        else if( time === 0 && timeArray[i+1] === 0){
+          index = j;
         }
       }
     }
-    return -1;
+    return freeThrowIndex === -1 ? index : freeThrowIndex;
   }
   parseData = () =>{
     const text = this.props.playByPlay;
@@ -161,7 +200,8 @@ export class App extends Component {
       separateHalves[0].split('\n').forEach((line)=>{
         //split each line into its 3 components (time, play, score)
         let play = line.split('\t')
-        if(typeof play[2]!== 'undefined'){
+        //remove highlight button and weird deadball rb b/w missed fts
+        if(typeof play[2]!== 'undefined' && !play[2].includes('Deadball Team Rebound')){
           firstHalfPlays.push({
             time: this.fixTime(play[0].replace(':','')),
             details: play[2]
@@ -173,7 +213,8 @@ export class App extends Component {
     if(separateHalves.length>1){
       separateHalves[1].split('\n').forEach((line)=>{
         let play = line.split('\t');
-        if(typeof play[2]!== 'undefined'){
+        //remove highlight button and weird deadball rb b/w missed fts
+        if(typeof play[2]!== 'undefined' && !play[2].includes('Deadball Team Rebound')){
           secondHalfPlays.push({
             time: this.fixTime(play[0].replace(':','')),
             details: play[2]
@@ -188,14 +229,13 @@ export class App extends Component {
     //combine the 2 arrays with a separator
     const playArray = [...firstHalfPlays,'HALF',...secondHalfPlays]
     let half = 1;
-
-    playArray.forEach((play)=>{
+    playArray.forEach((play,i)=>{
       //if the play is the separator, switch half to 2 to search 2nd half times
       if(play === 'HALF'){
         half = 2;
       }
       else{
-        const index = this.findTimeGap(play.time, half);
+        const index = this.findTimeGap(play, half, playArray[i+1]);
         if(index !== -1){
           const wakePlay = this.stringIncludes(play.details);
           const details = play.details.toLowerCase();
@@ -271,14 +311,23 @@ export class App extends Component {
           Object.keys(lineupData).forEach((cell)=>{
             if(typeof(lineupData[cell].v) !== 'undefined'){
               //if the cell has data, push it to the array
-              dataArray.push(lineupData[cell].v)
+              dataArray.push(lineupData[cell].w)
             }
           })
+          //pop off free throw sub info
+          this.secondHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>parseInt(time,10));
+          this.firstHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>parseInt(time,10));
+          //pop off the header
+          dataArray.pop()
+
+          console.log(dataArray, this.secondHalfSubShooter, this.firstHalfSubShooter)
+
           //loop through array (ignoring headers) and create a lineup with the data in each row
           for(let i = 3; i<= dataArray.length-3; i+=3){
             let tempLineup = new Lineup(dataArray[i].split(',').sort(),0,1);
-            tempLineup.firstHalfArray = dataArray[i+1].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
-            tempLineup.secondHalfArray = dataArray[i+2].split(',').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
+            //console.log(tempLineup)
+            tempLineup.firstHalfArray = dataArray[i+1].split('-').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
+            tempLineup.secondHalfArray = dataArray[i+2].split('-').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
             lineupArray.push(tempLineup)
             //console.log(i, dataArray.length)
           }
@@ -340,14 +389,20 @@ export class App extends Component {
                   <div className = 'resultsButton'>
                   <p><button type ='button' onClick = {this.endHalf}>End Half</button></p>
                   <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
-                  <p><button type = "button">Finished</button></p>
+                  <p><button type = "button" onClick = {this.subShooter}>Sub Shooter</button></p>
                   <p><button type = "button" onClick = {this.test}>Test</button></p>
                   <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
                   <p><button><CSVLink data={this.props.lineupArray.map((lineup)=>{
-                      let firstArray = (lineup.firstHalfArray.length > 0) ? lineup.firstHalfArray : ['none'];
-                      let secondArray = (lineup.secondHalfArray.length > 0) ? lineup.secondHalfArray : ['none'];
+                      let firstArray = (lineup.firstHalfArray.length > 0) ? lineup.firstHalfArray.toString().replace(/,/g, '-') : ['none'];
+                      let secondArray = (lineup.secondHalfArray.length > 0) ? lineup.secondHalfArray.toString().replace(/,/g, '-') : ['none'];
                       return {players: lineup.players, firstHalfArray: firstArray, secondHalfArray: secondArray}
-                    })} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
+                    }).concat([
+                      {
+                        players: 'FT Sub Shooter',
+                        firstHalfArray: this.firstHalfSubShooter.length > 0 ? this.firstHalfSubShooter.toString().replace(/,/g,'-'): ['none'],
+                        secondHalfArray: this.firstHalfSubShooter.length > 0 ? this.firstHalfSubShooter.toString().replace(/,/g,'-'): ['none'],
+                      }
+                  ])} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
                 </div>
               </div>
             </div>

@@ -13,6 +13,8 @@ const Results = (props) =>(
           <th>DRA</th>
           <th>ORF</th>
           <th>ORA</th>
+          <th>FTAF</th>
+          <th>FTAA</th>
           <th>2PMF</th>
           <th>2PAF</th>
           <th>2PMA</th>
@@ -37,6 +39,8 @@ const Results = (props) =>(
               <td>{lineup.dRebAgainst}</td>
               <td>{lineup.oRebFor}</td>
               <td>{lineup.oRebAgainst}</td>
+              <td>{lineup.FTAfor}</td>
+              <td>{lineup.FTAagainst}</td>
               <td>{lineup.madeTwosFor}</td>
               <td>{lineup.madeTwosFor+lineup.missedTwosFor}</td>
               <td>{lineup.madeTwosAgainst}</td>
@@ -49,6 +53,7 @@ const Results = (props) =>(
               <td>{lineup.assistsAgainst}</td>
               <td>{lineup.turnoversFor}</td>
               <td>{lineup.turnoversAgainst}</td>
+
             </tr>
           )
         })}
