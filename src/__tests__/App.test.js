@@ -139,7 +139,7 @@ describe('App Component',()=>{
     ]});
     wrapper.find('div.lineupButtons').find('button').first().simulate('click');
     expect(props.addLineup).toHaveBeenCalled();
-    expect(props.addTimeToLineup).toHaveBeenCalled();
+    expect(props.addTimeToLineup).not.toHaveBeenCalled();
     expect(props.changeIndex).toHaveBeenCalledWith(2);
     expect(props.lineupChanged).toHaveBeenCalled();
   })
@@ -190,10 +190,10 @@ describe('App Component',()=>{
     expect(wrapper.instance().stringIncludes('Kyle Guy')).toEqual(false);
   })
   it('returns the lineup index that was on the court at a specific time',()=>{
-    expect(wrapper.instance().findTimeGap(500,1)).toEqual(0);
-    expect(wrapper.instance().findTimeGap(500,2)).toEqual(1);
-    expect(wrapper.instance().findTimeGap(-5,1)).toEqual(-1);
-    expect(wrapper.instance().findTimeGap(-5,2)).toEqual(-1);
+    expect(wrapper.instance().findTimeGap({time: 500, details: ''},1,{time:500, details:''})).toEqual(0);
+    expect(wrapper.instance().findTimeGap({time: 500, details: ''},2,{time:500, details:''})).toEqual(1);
+    expect(wrapper.instance().findTimeGap({time: -5, details: ''},1,{time:-5, details:''})).toEqual(-1);
+    expect(wrapper.instance().findTimeGap({time: -5, details: ''},1,{time:-5, details:''})).toEqual(-1);
   })
   it('runs the parseData function',()=>{
     wrapper.setProps({playByPlay: testFile});
@@ -289,5 +289,11 @@ describe('App Component',()=>{
   })
   it('does not show results if false',()=>{
     expect(wrapper.find('div.App')).toBeDefined();
+  })
+  it('returns the correct value for reversing time',()=>{
+    expect(wrapper.instance().reverseTime(1200)).toEqual('2000')
+    expect(wrapper.instance().reverseTime(69)).toEqual('109')
+    expect(wrapper.instance().reverseTime(15)).toEqual('15')
+    expect(wrapper.instance().reverseTime(0)).toEqual('0')
   })
 })

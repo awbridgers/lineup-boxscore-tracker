@@ -88,6 +88,7 @@ export class App extends Component {
     let array = (this.props.half === 1) ? this.firstHalfSubShooter : this.secondHalfSubShooter
     array.push(this.fixTime(this.props.time))
   }
+  //fixes time from mmss to seconds
   fixTime = time =>{
     let value;
     if(time === "0"){
@@ -104,6 +105,16 @@ export class App extends Component {
     }
     return value;
   }
+  //reverse time from seconds back to mmss
+  reverseTime = time => {
+    const minutes = time/60 < 1 ? '' : Math.floor(time/60);
+    const seconds = time % 60 < 10 ? '0' +time % 60 : time%60;
+    if(minutes === '' && seconds === '00'){
+      return '0'
+    }
+    return `${minutes}${seconds}`
+  }
+  //returns the amount of seconds on the court
   getTime = (lineup)=>{
     let time = 0;
     let timeArray = [...lineup.firstHalfArray,...lineup.secondHalfArray];
@@ -315,8 +326,8 @@ export class App extends Component {
             }
           })
           //pop off free throw sub info
-          this.secondHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>parseInt(time,10));
-          this.firstHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>parseInt(time,10));
+          this.secondHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>this.fixTime(time));
+          this.firstHalfSubShooter = dataArray.pop().split('-').filter((x)=>x!=='none').map((time)=>this.fixTime(time));
           //pop off the header
           dataArray.pop()
 
@@ -326,8 +337,8 @@ export class App extends Component {
           for(let i = 3; i<= dataArray.length-3; i+=3){
             let tempLineup = new Lineup(dataArray[i].split(',').sort(),0,1);
             //console.log(tempLineup)
-            tempLineup.firstHalfArray = dataArray[i+1].split('-').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
-            tempLineup.secondHalfArray = dataArray[i+2].split('-').filter((x)=> x!=='none').map((time)=>parseInt(time,10));
+            tempLineup.firstHalfArray = dataArray[i+1].split('-').filter((x)=> x!=='none').map((time)=>this.fixTime(time));
+            tempLineup.secondHalfArray = dataArray[i+2].split('-').filter((x)=> x!=='none').map((time)=>this.fixTime(time));
             lineupArray.push(tempLineup)
             //console.log(i, dataArray.length)
           }
@@ -393,14 +404,18 @@ export class App extends Component {
                   <p><button type = "button" onClick = {this.test}>Test</button></p>
                   <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
                   <p><button><CSVLink data={this.props.lineupArray.map((lineup)=>{
-                      let firstArray = (lineup.firstHalfArray.length > 0) ? lineup.firstHalfArray.toString().replace(/,/g, '-') : ['none'];
-                      let secondArray = (lineup.secondHalfArray.length > 0) ? lineup.secondHalfArray.toString().replace(/,/g, '-') : ['none'];
+                      let firstArray = (lineup.firstHalfArray.length > 0) ?
+                        lineup.firstHalfArray.map((time)=>this.reverseTime(time)).toString().replace(/,/g, '-') : ['none'];
+                      let secondArray = (lineup.secondHalfArray.length > 0) ?
+                        lineup.secondHalfArray.map((time)=>this.reverseTime(time)).toString().replace(/,/g, '-') : ['none'];
                       return {players: lineup.players, firstHalfArray: firstArray, secondHalfArray: secondArray}
                     }).concat([
                       {
                         players: 'FT Sub Shooter',
-                        firstHalfArray: this.firstHalfSubShooter.length > 0 ? this.firstHalfSubShooter.toString().replace(/,/g,'-'): ['none'],
-                        secondHalfArray: this.firstHalfSubShooter.length > 0 ? this.firstHalfSubShooter.toString().replace(/,/g,'-'): ['none'],
+                        firstHalfArray: this.firstHalfSubShooter.length > 0 ?
+                          this.firstHalfSubShooter.map((time)=>this.reverseTime(time)).toString().replace(/,/g,'-'): ['none'],
+                        secondHalfArray: this.firstHalfSubShooter.length > 0 ?
+                          this.firstHalfSubShooter.map((time)=>this.reverseTime(time)).toString().replace(/,/g,'-'): ['none'],
                       }
                   ])} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
                 </div>
