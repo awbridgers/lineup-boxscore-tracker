@@ -305,6 +305,7 @@ export class App extends Component {
         }
       }
     })
+    this.props.changeResults();
   }
   uploadLineup = (e) =>{
     if(window.confirm('Uploading a lineup wille erase all previously recorded data. Continue?')){
@@ -401,7 +402,7 @@ export class App extends Component {
                   <p><button type ='button' onClick = {this.endHalf}>End Half</button></p>
                   <p><button type = "button" onClick = {this.changeHalf}>Change Half</button></p>
                   <p><button type = "button" onClick = {this.subShooter}>Sub Shooter</button></p>
-                  <p><button type = "button" onClick = {this.test}>Test</button></p>
+                  <p><button type = "button" onClick = {this.test}>Calculate</button></p>
                   <p><button type = "button" onClick = {this.props.changeResults}>Show Results</button></p>
                   <p><button><CSVLink data={this.props.lineupArray.map((lineup)=>{
                       let firstArray = (lineup.firstHalfArray.length > 0) ?
