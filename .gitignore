@@ -10,7 +10,7 @@
 
 # production
 /build
-
+/public/Icon
 # misc
 .DS_Store
 .env.local
