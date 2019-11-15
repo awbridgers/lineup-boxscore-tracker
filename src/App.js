@@ -415,8 +415,8 @@ export class App extends Component {
                         players: 'FT Sub Shooter',
                         firstHalfArray: this.firstHalfSubShooter.length > 0 ?
                           this.firstHalfSubShooter.map((time)=>this.reverseTime(time)).toString().replace(/,/g,'-'): ['none'],
-                        secondHalfArray: this.firstHalfSubShooter.length > 0 ?
-                          this.firstHalfSubShooter.map((time)=>this.reverseTime(time)).toString().replace(/,/g,'-'): ['none'],
+                        secondHalfArray: this.secondHalfSubShooter.length > 0 ?
+                          this.secondHalfSubShooter.map((time)=>this.reverseTime(time)).toString().replace(/,/g,'-'): ['none'],
                       }
                   ])} headers = {this.headers}>Lineup CSV</CSVLink></button></p>
                 </div>
