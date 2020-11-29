@@ -1,11 +1,11 @@
 //for testing purposes
 import Lineup from '../lineupClass.js'
 let testLineup = new Lineup([
-  'Brandon Childress',
-  'Sharone Wright',
-  'Chaundee Brown',
-  'Jaylen Hoard',
-  'Olivier Sarr'],1200,1);
+  'Ian DuBose',
+  'Jalen Johnson',
+  'Daivien Williamson',
+  'Isaiah Mucius',
+  'Ismael Massoud'],1200,1);
   testLineup.firstHalfArray = [1200,0];
   testLineup.secondHalfArray = [1200,0];
 
