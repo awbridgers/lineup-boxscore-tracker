@@ -1,7 +1,14 @@
-
-
-export const currentLineup = (state = ['Brandon Childress','Andrien White', 'Chaundee Brown', 'Isaiah Mucius', 'Olivier Sarr'], action) =>{
-  switch(action.type){
+export const currentLineup = (
+  state = [
+    'Ian DuBose',
+    'Jalen Johnson',
+    'Daivien Williamson',
+    'Isaiah Mucius',
+    'Ismael Massoud',
+  ],
+  action
+) => {
+  switch (action.type) {
     case 'REMOVE_PLAYER':
       let newArray = state.slice();
       newArray[action.ID] = '';
@@ -13,4 +20,4 @@ export const currentLineup = (state = ['Brandon Childress','Andrien White', 'Cha
     default:
       return state;
   }
-}
+};
