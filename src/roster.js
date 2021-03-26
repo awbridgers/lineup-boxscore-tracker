@@ -15,7 +15,8 @@ let roster = [
   "Sunday Okeke",
   "Anthony Mathis",
   "Grant Van Beveren",
-  "Miles Lester"
+  "Miles Lester",
+  "Carter Whitt"
 ];
 
 roster.sort((a,b)=>{
