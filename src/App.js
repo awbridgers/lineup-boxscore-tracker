@@ -239,7 +239,7 @@ export class App extends Component {
     const {firstHalfPlays, secondHalfPlays} = this.parseData();
     //combine the 2 arrays with a separator
     const playArray = [...firstHalfPlays,'HALF',...secondHalfPlays];
-    console.log(playArray)
+    //console.log(playArray)
     let half = 1;
     playArray.forEach((play,i)=>{
       //if the play is the separator, switch half to 2 to search 2nd half times
@@ -334,7 +334,7 @@ export class App extends Component {
           //pop off the header
           dataArray.pop()
 
-          console.log(dataArray, this.secondHalfSubShooter, this.firstHalfSubShooter)
+          //console.log(dataArray, this.secondHalfSubShooter, this.firstHalfSubShooter)
 
           //loop through array (ignoring headers) and create a lineup with the data in each row
           for(let i = 3; i<= dataArray.length-3; i+=3){
