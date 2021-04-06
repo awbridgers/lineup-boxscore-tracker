@@ -204,7 +204,7 @@ export class App extends Component {
     let firstHalfPlays = [];
     let secondHalfPlays = [];
     //split play by play into halves
-    const separateHalves = text.split('\n2nd Half\ntime\tteam\tPLAY\tSCORE\n');
+    const separateHalves = text.split('\n2nd Half\nTIME\tTEAM\tPLAY\tSCORE\n');
     //if the first half exists
     if(separateHalves.length>0){
       //split by new line character and loop through
@@ -238,7 +238,8 @@ export class App extends Component {
   test = () =>{
     const {firstHalfPlays, secondHalfPlays} = this.parseData();
     //combine the 2 arrays with a separator
-    const playArray = [...firstHalfPlays,'HALF',...secondHalfPlays]
+    const playArray = [...firstHalfPlays,'HALF',...secondHalfPlays];
+    console.log(playArray)
     let half = 1;
     playArray.forEach((play,i)=>{
       //if the play is the separator, switch half to 2 to search 2nd half times
@@ -247,6 +248,7 @@ export class App extends Component {
       }
       else{
         const index = this.findTimeGap(play, half, playArray[i+1]);
+        console.log(index)
         if(index !== -1){
           const wakePlay = this.stringIncludes(play.details);
           const details = play.details.toLowerCase();
