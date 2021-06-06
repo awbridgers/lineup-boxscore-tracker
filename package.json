@@ -2,7 +2,7 @@
   "name": "lineup-boxscore-tracker",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.io/redux-lineup-tracker",
+  "homepage": "https://github.io/lineup-boxscore-tracker",
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
