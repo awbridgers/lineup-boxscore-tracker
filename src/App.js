@@ -141,7 +141,7 @@ export class App extends Component {
     //i.e. 'Wake Forest Offensive Rebound'
     let result = (string.includes('Wake Forest')) ? true : false;
     roster.forEach((name)=>{
-      if(string.includes(name)){
+      if(string.toLowerCase().includes(name.toLowerCase())){
         result = true;
       }
     })

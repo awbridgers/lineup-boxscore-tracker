@@ -1,6 +1,10 @@
 export const currentLineup = (
   state = [
-   
+    "Isaiah Mucius",
+    "Daivien Williamson",
+    "Jake LaRavia",
+    "Cameron Hildreth",
+    "Dallas Walton",
   ],
   action
 ) => {
