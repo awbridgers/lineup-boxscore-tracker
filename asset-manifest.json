@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/lineup-boxscore-tracker/static/css/main.0ee6151a.chunk.css",
-    "main.js": "/lineup-boxscore-tracker/static/js/main.7521df76.chunk.js",
-    "main.js.map": "/lineup-boxscore-tracker/static/js/main.7521df76.chunk.js.map",
+    "main.js": "/lineup-boxscore-tracker/static/js/main.d14b018a.chunk.js",
+    "main.js.map": "/lineup-boxscore-tracker/static/js/main.d14b018a.chunk.js.map",
     "runtime-main.js": "/lineup-boxscore-tracker/static/js/runtime-main.90471243.js",
     "runtime-main.js.map": "/lineup-boxscore-tracker/static/js/runtime-main.90471243.js.map",
     "static/js/2.5a20421f.chunk.js": "/lineup-boxscore-tracker/static/js/2.5a20421f.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.90471243.js",
     "static/js/2.5a20421f.chunk.js",
     "static/css/main.0ee6151a.chunk.css",
-    "static/js/main.7521df76.chunk.js"
+    "static/js/main.d14b018a.chunk.js"
   ]
 }
