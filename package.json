@@ -28,7 +28,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-form": "^8.1.0",
     "thunk": "0.0.1",
-    "xlsx": "^0.14.2"
+    "xlsx": "^0.17.0"
   },
   "scripts": {
     "start": "react-scripts start",
